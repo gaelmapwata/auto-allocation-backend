@@ -1,10 +1,17 @@
 # NODE TYPESCRIPT STARTER
 
+## Features
+
+In this module we use `nodemailer` to send mail (https://nodemailer.com/)
+
+And `pug` as mail template system for render (https://pugjs.org/api/getting-started.html)
+
 ## Installation
 
 1. Add environnement variables `cp .env.example .env`
-1. Install dependencies: `yarn install`
-2. Build TS to JS: `yarn build`
+2. Update variables in `.env` file
+3. Install dependencies: `yarn install`
+4. Build TS to JS: `yarn build`
 
 ## Run development server
 
