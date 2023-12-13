@@ -1,5 +1,4 @@
 import Role from '../models/Role';
-import { Request } from '../types/expressOverride';
 
 const roleValidators = {
   storeSchema: {
@@ -21,8 +20,8 @@ const roleValidators = {
         errorMessage: 'Le champ "name" est obligatoire',
       },
       custom: {
-        options: async (value: string, { req }: { req: unknown }) => {
-          const { id } = (req as Request).params;
+        options: async (value: string, { req }: { req: any }) => {
+          const { id } = req.params;
           const role = await Role.findByPk(id);
           if (role && role.name !== value) {
             if (await Role.findOne({ where: { name: value } })) {

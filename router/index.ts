@@ -5,7 +5,7 @@ import express, { Request, Response } from 'express';
 import UserController from '../controllers/UserController';
 import AuthController from '../controllers/AuthController';
 import authJwt from '../middleware/authJwt';
-import Permission from '../models/Permission';
+// import Permission from '../models/Permission';
 import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
 
@@ -20,7 +20,9 @@ router.get('/', (_: Request, res: Response) => {
  */
 
 router.post('/auth/signin', AuthController.signin as any);
-router.get('/auth/user', [authJwt.shouldBeLogged], AuthController.getCurrentUser);
+router.post('/auth/check-otp', AuthController.checkOtp);
+router.get('/auth/user', [authJwt.verifyToken], AuthController.getCurrentUser);
+router.post('/auth/logout', AuthController.logout);
 
 // ----------
 
@@ -30,33 +32,31 @@ router.get('/auth/user', [authJwt.shouldBeLogged], AuthController.getCurrentUser
 
 router.get(
   '/users',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.USER.READ)],
+  [authJwt.verifyToken],
   UserController.index,
 );
 router.post(
   '/users',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.USER.CREATE)],
+  [authJwt.verifyToken],
   UserController.store as any,
 );
 router.get(
   '/users/:id',
   [
-    authJwt.shouldBeLogged,
-    authJwt.shouldHavePermissionOrParamIdBeLoggedUserId(Permission.USER.READ),
+    authJwt.verifyToken,
   ],
   UserController.show,
 );
 router.put(
   '/users/:id',
   [
-    authJwt.shouldBeLogged,
-    authJwt.shouldHavePermissionOrParamIdBeLoggedUserId(Permission.USER.UPDATE),
+    authJwt.verifyToken,
   ],
   UserController.update as any,
 );
 router.delete(
   '/users/:id',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.USER.DELETE)],
+  [authJwt.verifyToken],
   UserController.delete,
 );
 
@@ -68,37 +68,37 @@ router.delete(
 
 router.get(
   '/roles',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.READ)],
+  [authJwt.verifyToken],
   RoleController.index,
 );
 router.post(
   '/roles',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.CREATE)],
+  [authJwt.verifyToken],
   RoleController.store as any,
 );
 router.post(
   '/roles/:id/add-permissions',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.UPDATE)],
+  [authJwt.verifyToken],
   RoleController.addPermissions as any,
 );
 router.post(
   '/roles/:id/update-permissions',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.UPDATE)],
+  [authJwt.verifyToken],
   RoleController.updatePermissions as any,
 );
 router.get(
   '/roles/:id',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.READ)],
+  [authJwt.verifyToken],
   RoleController.show,
 );
 router.put(
   '/roles/:id',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.UPDATE)],
+  [authJwt.verifyToken],
   RoleController.update as any,
 );
 router.delete(
   '/roles/:id',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.ROLE.DELETE)],
+  [authJwt.verifyToken],
   RoleController.delete,
 );
 
@@ -110,7 +110,7 @@ router.delete(
 
 router.get(
   '/ressources',
-  [authJwt.shouldBeLogged, authJwt.shouldHavePermission(Permission.RESSOURCE.READ)],
+  [authJwt.verifyToken],
   RessourceController.index as any,
 );
 

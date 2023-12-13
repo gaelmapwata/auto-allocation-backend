@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import AppError from '../types/AppError';
+import AppError from '../types/CustomError';
 
 export default {
   handleResponseError(res: Response, err: Error): void {

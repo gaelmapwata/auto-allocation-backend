@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { checkSchema } from 'express-validator';
+import { checkSchema, validationResult } from 'express-validator';
 import User from '../models/User';
-import userValidators from '../validators/user.validator';
-import { bcryptHashPassword } from '../utils/bcrypt.util';
-import { handleExpressValidators } from '../utils/express.util';
+import userValidators from '../validators/userValidators';
+import Role from '../models/Role';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 export default {
   index: async (req: Request, res: Response) => {
@@ -18,13 +19,13 @@ export default {
         ...limitQuery,
         offset,
         order: ['email'],
-        attributes: { exclude: ['password'] },
+        include: [Role],
       });
 
       const usersSize = usersAndCount.count;
       const totalPages = Math.ceil(usersSize / limit);
 
-      return res.status(200).json({
+      res.status(200).json({
         data: usersAndCount.rows,
         lastPage: totalPages,
         currentPage: page,
@@ -32,7 +33,7 @@ export default {
         total: usersSize,
       });
     } catch (error) {
-      return res.status(500).json(error);
+      res.status(500).json(error);
     }
   },
 
@@ -40,57 +41,64 @@ export default {
     checkSchema(userValidators.storeSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
+        const user = await User.create(req.body);
 
-        const hashedPassword = await bcryptHashPassword(req.body.password);
-        const user = await User.create({
-          ...req.body,
-          password: hashedPassword,
-        }, {
-          fields: User.fillable,
-        });
-
-        const { roles } = req.body;
+        const { roles } = (req.body as any);
         if (roles) {
           await user.$add('roles', roles);
         }
 
-        return res.status(201).json(user);
+        res.status(201).json(user);
       } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],
-
   show: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const user = await User.findByPk(id, {
-        attributes: { exclude: ['password'] },
-      });
-      return res.status(200).json(user);
+      const user = await User.findByPk(id);
+      res.status(200).json(user);
     } catch (error) {
-      return res.status(500).json(error);
+      res.status(500).json(error);
     }
   },
+  addRoles: [
+    checkSchema(userValidators.addRolesSchema),
+    async (req: Request, res: Response) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
+        }
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+          return res.status(404).json({ msg: 'L\'utilisateur n\'a pas été retrouver' });
+        }
+
+        const { roles } = (req.body as any);
+        await user.$add('roles', roles);
+
+        res.status(201).json(user);
+      } catch (error) {
+        res.status(500).json(error);
+      }
+    },
+  ],
 
   update: [
     checkSchema(userValidators.updateSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
-
         const { id } = req.params;
-
-        if (req.body.password) {
-          req.body.password = await bcryptHashPassword(req.body.password);
-        } else {
-          delete req.body.password;
-        }
         await User.update(
           req.body,
           {
@@ -102,38 +110,13 @@ export default {
         );
 
         const newUser = await User.findByPk(id);
-
-        const { roles } = req.body;
+        const { roles } = (req.body as any);
         if (roles && newUser) {
           await newUser.$set('roles', roles);
         }
-
-        return res.status(200).json(newUser);
+        res.status(200).json(newUser);
       } catch (error) {
-        return res.status(500).json(error);
-      }
-    },
-  ],
-
-  addRoles: [
-    checkSchema(userValidators.addRolesSchema),
-    async (req: Request, res: Response) => {
-      try {
-        if (handleExpressValidators(req, res)) {
-          return null
-        }
-
-        const user = await User.findByPk(req.params.id);
-        if (!user) {
-          return res.status(404).json({ msg: 'L\'utilisateur n\'a pas été retrouver' });
-        }
-
-        const { roles } = req.body;
-        await user.$add('roles', roles);
-
-        return res.status(201).json(user);
-      } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],
@@ -144,9 +127,9 @@ export default {
       const user = await User.destroy({
         where: { id },
       });
-      return res.status(204).json(user);
+      res.status(204).json(user);
     } catch (error) {
-      return res.status(500).json(error);
+      res.status(500).json(error);
     }
   },
 };

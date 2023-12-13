@@ -1,67 +1,118 @@
-import { Response } from 'express';
-import bcrypt from 'bcryptjs';
-import { checkSchema } from 'express-validator';
-import authValidators from '../validators/auth.validator';
-import { Request } from '../types/expressOverride';
-import { handleExpressValidators } from '../utils/express.util';
+import { Request, Response } from 'express';
+import { Op } from 'sequelize';
+import add from 'date-fns/add';
+import activeDirectoryService from '../services/activeDirectoryService';
+
 import User from '../models/User';
+import Otp from '../models/Otp';
+import generateNumeric from '../utils/utilities';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
+import { sendMailFromEmailTemplates } from '../utils/mail';
+import errorHandlerService from '../services/errorHandlerService';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
-const TOKEN_EXPIRATION_TIME_IN_MS = 2592000; // 30 days
+const OTP_MINUTES_VALIDITY = 5; // 5 minutes
+const JWT_TIME_VALIDITY = 592000; // 12 hours
 
 export default {
-  signin: [
-    checkSchema(authValidators.signinSchema),
-    async (req: Request, res: Response) => {
-      if (handleExpressValidators(req, res)) {
-        return null
-      }
-
-      const userToLogin = await User.findOne(
-        { where: { email: req.body.email } },
-      );
-
-      if (!userToLogin) {
-        return res.status(401).send({ message: "Ce compte n'a pas été retrouvé" });
-      }
-
-      const passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        userToLogin.password,
-      );
-
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          token: null,
-          message: 'Mot de passe invalide',
-        });
-      }
-
-      const token = jwt.sign({ id: userToLogin.id }, process.env.JWT_SECRET, {
-        expiresIn: TOKEN_EXPIRATION_TIME_IN_MS,
-      });
-      return res.status(200).json({
-        user: userToLogin,
-        token,
-      });
-    },
-  ],
-  getCurrentUser: async (req: Request, res: Response) => {
+  signin: async (req: Request, res: Response) => {
     try {
-      const loggedUser = await User.findByPk(req.userId as number, {
-        include: [{ model: Role, include: [Permission] }],
+      const user = await User.findOne({
+        where: {
+          email: req.body.email,
+        },
       });
-      if (!loggedUser) {
+
+      if (!user) {
         return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
       }
 
-      return res.status(200).json(loggedUser);
+      // const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
+      // if (!canLogged) {
+      //   return res.status(401).send({
+      //     msg: 'Email ou Mot de passe invalide',
+      //   });
+      // }
+
+      // Destroy expired OTP
+      Otp.destroy({
+        where: {
+          email: req.body.email,
+          expirationDate: {
+            [Op.lt]: new Date(),
+          },
+        },
+      });
+
+      // create new OTP
+      const newOtp = await Otp.create({
+        email: req.body.email,
+        otp: generateNumeric.generateNumericOTP(),
+        expirationDate: add(new Date(), { minutes: OTP_MINUTES_VALIDITY }).toISOString().split('.')[0],
+      });
+
+      sendMailFromEmailTemplates({
+        mailTo: newOtp.email,
+        locals: { otp: newOtp.otp },
+        template: 'login-otp',
+      });
+      return res.status(200).json({ msg: 'authentification réussie' });
     } catch (error) {
-      return res.status(500).json(error);
+      return errorHandlerService.handleResponseError(res, error as Error);
     }
   },
+  checkOtp: async (req: Request, res: Response) => {
+    try {
+      const user = await User.findOne({
+        where: {
+          email: req.body.email,
+        },
+      });
+
+      if (!user) {
+        return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
+      }
+      const otp = await Otp.findOne({
+        where: {
+          email: req.body.email,
+          otp: req.body.otp,
+          expirationDate: {
+            [Op.gte]: new Date(),
+          },
+        },
+      });
+
+      if (!otp) {
+        return res.status(401).send({ msg: 'Otp non reconnue ou expiré' });
+      }
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: JWT_TIME_VALIDITY, // 12 hours
+      });
+
+      otp.destroy();
+
+      return res.status(200).json({
+        token,
+      });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  getCurrentUser: async (req: Request, res: Response) => {
+    try {
+      const user = await User.findByPk((req as any).userId, {
+        include: [{ model: Role, include: [Permission] }],
+      });
+      if (!user) {
+        return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  logout: (_: unknown, res: Response) => res.status(200).json({}),
 };

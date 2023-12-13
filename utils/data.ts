@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
 
 export const getTodayDate = () => format(new Date(), 'yyyy-MM-dd');
-
 export const getYesterdayDate = () => {
   const today = new Date();
   today.setDate(today.getDate() - 1);

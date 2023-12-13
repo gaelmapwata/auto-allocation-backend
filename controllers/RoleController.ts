@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
-import { checkSchema } from 'express-validator';
+import { checkSchema, validationResult } from 'express-validator';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
 import Ressource from '../models/Ressource';
-import roleValidators from '../validators/role.validator';
-import { handleExpressValidators } from '../utils/express.util';
+import roleValidators from '../validators/roleValidators';
 
 function groupPermissionsByRessources(permissions: Permission[]): Ressource[] {
   const ressources: Ressource[] = [];
@@ -23,6 +22,7 @@ function groupPermissionsByRessources(permissions: Permission[]): Ressource[] {
   return ressources;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 export default {
   index: async (req: Request, res: Response) => {
     try {
@@ -45,14 +45,14 @@ export default {
     checkSchema(roleValidators.storeSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
-
         const role = await Role.create(req.body);
-        return res.status(201).json(role);
+        res.status(201).json(role);
       } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],
@@ -77,10 +77,10 @@ export default {
     checkSchema(roleValidators.addPermissionSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
-
         const role = await Role.findByPk(req.params.id);
         if (!role) {
           return res.status(404).json({ msg: 'Le role n\'a pas été retrouvé' });
@@ -88,9 +88,9 @@ export default {
 
         await role.$add('permissions', req.body.permissions);
 
-        return res.status(201).json(role);
+        res.status(201).json(role);
       } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],
@@ -99,10 +99,10 @@ export default {
     checkSchema(roleValidators.updatePermissionSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
-
         const role = await Role.findByPk(req.params.id);
         if (!role) {
           return res.status(404).json({ msg: 'Le role n\'a pas été retrouvé' });
@@ -110,9 +110,9 @@ export default {
 
         await role.$set('permissions', req.body.permissions);
 
-        return res.status(201).json(role);
+        res.status(201).json(role);
       } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],
@@ -121,11 +121,12 @@ export default {
     checkSchema(roleValidators.updateSchema),
     async (req: Request, res: Response) => {
       try {
-        if (handleExpressValidators(req, res)) {
-          return null
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ msg: errors.array() });
         }
 
-        const { id } = req.params;
+        const { id } = req.params as any;
         await Role.update(
           req.body,
           {
@@ -137,9 +138,9 @@ export default {
         );
 
         const newRole = await Role.findByPk(id);
-        return res.status(200).json(newRole);
+        res.status(200).json(newRole);
       } catch (error) {
-        return res.status(500).json(error);
+        res.status(500).json(error);
       }
     },
   ],

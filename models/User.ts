@@ -10,13 +10,10 @@ import UserRole from './UserRole';
   paranoid: true,
 })
 export default class User extends Model {
-  static fillable = ['email', 'password'];
+  static fillable = ['email'];
 
   @Column
     email!: string;
-
-  @Column
-    password!: string;
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];
