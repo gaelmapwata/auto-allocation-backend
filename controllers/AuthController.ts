@@ -9,7 +9,7 @@ import generateNumeric from '../utils/utilities';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
 import { sendMailFromEmailTemplates } from '../utils/mail';
-import errorHandlerService from '../services/errorHandlerService';
+import errorHandlerService from '../services/ErrorHandlerService';
 
 const jwt = require('jsonwebtoken');
 
