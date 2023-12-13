@@ -15,7 +15,6 @@ module.exports = {
         type: Sequelize.STRING,
       },
       userId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'users',
@@ -31,12 +30,11 @@ module.exports = {
         type: Sequelize.DATE,
       },
       deletedAt: {
-        allowNull: true,
         type: Sequelize.DATE,
       },
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('logs');
   },
 };
