@@ -1,4 +1,4 @@
-# NODE TYPESCRIPT STARTER
+# AUTO ALLOCATION API
 
 ## Installation
 
