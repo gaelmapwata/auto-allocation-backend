@@ -114,10 +114,4 @@ router.get(
   RessourceController.index as any,
 );
 
-// ----------
-
-router.get('/protected', [authJwt.shouldBeLogged], (_: Request, res: Response) => {
-  res.send('You have access to protected content !! ');
-});
-
 export default router;
