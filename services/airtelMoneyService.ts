@@ -5,11 +5,11 @@ import { CheckKYCResponseI } from '../types/AirtelMoney';
 const AirtelMoneyService = {
   login: () : Promise<any> => new Promise((resolve, reject) => {
     const userData = {
-      client_id: '3fbe2eb3-1d12-4400-bacb-88ed59f096c0',
-      client_secret: '306a42d5-018a-4099-ba6c-73b59555620d',
-      grant_type: 'client_credentials',
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      grant_type: process.env.GRANT_TYPE,
     };
-    axios.post('https://openapiuat.airtel.africa/auth/oauth2/token', userData)
+    axios.post(`${process.env.AUTH_AIRTEL_URL}`, userData)
       .then((response) => {
         resolve(response);
       })
@@ -27,7 +27,7 @@ const AirtelMoneyService = {
         Authorization: `Bearer ${user.data.access_token}`,
       };
 
-      axios.get(`https://openapiuat.airtel.africa/standard/v1/users/${msisdn}`, { headers })
+      axios.get(`${process.env.KYC_MSISDN_URL}/${msisdn}`, { headers })
         .then(({ data } : { data: CheckKYCResponseI }) => {
           if (!data.status.success) {
             reject(
