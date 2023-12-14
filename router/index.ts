@@ -8,6 +8,7 @@ import authJwt from '../middleware/authJwt';
 // import Permission from '../models/Permission';
 import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
+import AirtelMoneyController from '../controllers/AirtelMoneyController';
 
 const router = express.Router();
 
@@ -113,5 +114,11 @@ router.get(
   [authJwt.verifyToken],
   RessourceController.index as any,
 );
+
+/**
+ * airtelmoney routes
+ */
+
+router.get('/check-kyc/:msisdn', [authJwt.verifyToken], AirtelMoneyController.checkKYCMsisdn);
 
 export default router;
