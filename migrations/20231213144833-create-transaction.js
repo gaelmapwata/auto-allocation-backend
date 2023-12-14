@@ -24,6 +24,10 @@ module.exports = {
         type: Sequelize.DECIMAL(18, 9),
         allowNull: false,
       },
+      currency: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       note: {
         type: Sequelize.STRING,
         allowNull: false,

@@ -17,6 +17,7 @@ export default class Transaction extends Model {
     'lastName',
     'firstName',
     'amount',
+    'currency',
     'note',
     'userId',
     'errorFinacle',
@@ -35,6 +36,9 @@ export default class Transaction extends Model {
 
   @Column
     amount!: number;
+
+  @Column
+    currency!: string;
 
   @Column
     note!: string;
