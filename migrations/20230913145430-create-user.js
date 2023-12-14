@@ -12,6 +12,12 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true,
       },
+      accountNumberCDF: {
+        type: Sequelize.STRING,
+      },
+      accountNumberUSD: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
