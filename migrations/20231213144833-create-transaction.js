@@ -10,15 +10,23 @@ module.exports = {
       },
       msisdn: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       lastName: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      firstName: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       amount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(18, 9),
+        allowNull: false,
       },
       note: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       userId: {
         allowNull: false,
