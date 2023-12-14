@@ -9,6 +9,7 @@ import authJwt from '../middleware/authJwt';
 import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
 import AirtelMoneyController from '../controllers/AirtelMoneyController';
+import TransactionController from '../controllers/TransactionController';
 
 const router = express.Router();
 
@@ -120,5 +121,11 @@ router.get(
  */
 
 router.get('/check-kyc/:msisdn', [authJwt.verifyToken], AirtelMoneyController.checkKYCByMsisdn);
+
+/**
+ * transactions routes
+ */
+
+router.post('/transactions', [authJwt.verifyToken], TransactionController.storeTransaction as any);
 
 export default router;

@@ -10,11 +10,12 @@ import User from './User';
   paranoid: true,
 })
 
-export default class Log extends Model {
+export default class Transaction extends Model {
   // Propriétés fillable
   static fillable: string[] = [
     'msisdn',
     'lastName',
+    'firstName',
     'amount',
     'note',
     'userId',
@@ -28,6 +29,9 @@ export default class Log extends Model {
 
   @Column
     lastName!: string;
+
+  @Column
+    firstName!: string;
 
   @Column
     amount!: number;
