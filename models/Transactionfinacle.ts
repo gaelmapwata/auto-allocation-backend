@@ -10,7 +10,7 @@ import Transaction from './Transaction';
   paranoid: true,
 })
 
-export default class Transactionfinacle extends Model {
+export default class TransactionFinacle extends Model {
   // Propriétés fillable
   static fillable: string[] = [
     'stan',
