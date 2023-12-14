@@ -10,10 +10,16 @@ import UserRole from './UserRole';
   paranoid: true,
 })
 export default class User extends Model {
-  static fillable = ['email'];
+  static fillable = ['email', 'accountNumberCDF', 'accountNumberUSD'];
 
   @Column
     email!: string;
+
+  @Column
+    accountNumberCDF!: string;
+
+  @Column
+    accountNumberUSD!: string;
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];

@@ -4,12 +4,13 @@ import { parseString } from 'xml2js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import xmlbuilder from 'xmlbuilder';
 import { format } from 'date-fns';
+import TransactionFinacle from '../models/TransactionFinacle';
 import ActionCodeFinacleUtilities from '../utils/actionCodeFinacle';
 import AppError from '../types/CustomError';
 
 export default {
   // eslint-disable-next-line max-len
-  sendTransaction: (idTransaction:number, amount:number, currency:string, drAcctNum:string, crAcctNum:string) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
+  sendTransaction: (transactionFinacle: TransactionFinacle, idTransaction:number) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
     const tranDateTime = new Date();
     const formatTranDateTime = format(tranDateTime, 'yyyyMMddHHmmss');
     const formatValueDate = format(tranDateTime, 'yyyyMMdd');
@@ -28,13 +29,13 @@ export default {
       .dat(`<C24TRANREQ>
             <STAN>${formatTranDateTime}</STAN>
             <TRAN_DATE_TIME>${formatTranDateTime}</TRAN_DATE_TIME>
-            <TRAN_AMT>${amount}</TRAN_AMT>
+            <TRAN_AMT>${transactionFinacle.tranAmt}</TRAN_AMT>
             <PROCESSING_CODE>50</PROCESSING_CODE>
-            <TRAN_CRNCY_CODE>${currency}</TRAN_CRNCY_CODE>
+            <TRAN_CRNCY_CODE>${transactionFinacle.tranCrncyCode}</TRAN_CRNCY_CODE>
             <COUNTRY_CODE>'COD'</COUNTRY_CODE>
             <VALUE_DATE>${formatValueDate}</VALUE_DATE>
-            <DR_ACCT_NUM>${drAcctNum}</DR_ACCT_NUM>
-            <CR_ACCT_NUM>${crAcctNum}</CR_ACCT_NUM>
+            <DR_ACCT_NUM>${transactionFinacle.drAcctNum}</DR_ACCT_NUM>
+            <CR_ACCT_NUM>${transactionFinacle.crAcctNum}</CR_ACCT_NUM>
             <TERMINAL_NAME_LOC>TIPS</TERMINAL_NAME_LOC>
             <RESERVED_FLD_1>
               Paiement Auto Allocation ${idTransaction}
