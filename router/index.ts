@@ -119,6 +119,6 @@ router.get(
  * airtelmoney routes
  */
 
-router.get('/check-kyc/:msisdn', [authJwt.verifyToken], AirtelMoneyController.checkKYCMsisdn);
+router.get('/check-kyc/:msisdn', [authJwt.verifyToken], AirtelMoneyController.checkKYCByMsisdn);
 
 export default router;

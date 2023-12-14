@@ -31,7 +31,7 @@ const AirtelMoneyService = {
         .then(({ data } : { data: CheckKYCResponseI }) => {
           if (!data.status.success) {
             reject(
-              new AppError(data.status.message, 500),
+              new AppError(data.status.message, 400),
             );
           } else {
             resolve(data);
