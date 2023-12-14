@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AppError from '../types/CustomError';
+import { CheckKYCResponseI } from '../types/AirtelMoney';
 
 const AirtelMoneyService = {
   login: () : Promise<any> => new Promise((resolve, reject) => {
@@ -17,7 +18,7 @@ const AirtelMoneyService = {
       });
   }),
 
-  checkKYC: (msisdn:string) => new Promise((resolve, reject) => {
+  checkKYC: (msisdn:string): Promise<CheckKYCResponseI> => new Promise((resolve, reject) => {
     AirtelMoneyService.login().then((user) => {
       const headers = {
         Accept: '*/*',
@@ -27,7 +28,7 @@ const AirtelMoneyService = {
       };
 
       axios.get(`https://openapiuat.airtel.africa/standard/v1/users/${msisdn}`, { headers })
-        .then(({ data }) => {
+        .then(({ data } : { data: CheckKYCResponseI }) => {
           if (!data.status.success) {
             reject(
               new AppError(data.status.message, 500),

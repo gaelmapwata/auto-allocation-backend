@@ -6,7 +6,7 @@ const AirtelMoneyController = {
   checkKYCMsisdn: async (req: Request, res: Response) => {
     try {
       const msisdnResult = await airtelMoneyService.checkKYC(req.params.msisdn);
-      return res.status(200).json(msisdnResult);
+      return res.status(200).json(msisdnResult.data);
     } catch (error) {
       return errorHandlerService.handleResponseError(res, error as Error);
     }
