@@ -1,48 +1,38 @@
 const actionCodeAutoAllocation = {
   getActionCodeAutoAllocation: (sKeyresult:string) => {
-    let success = false;
-    let error = '';
+    let errorMsg = '';
 
     switch (sKeyresult) {
       case 'DP02050001000':
-        success = false;
-        error = 'AMBIGUOUS';
+        errorMsg = 'AMBIGUOUS';
         break;
       case 'DP02050001002':
-        success = false;
-        error = 'FAILED';
+        errorMsg = 'FAILED';
         break;
       case 'DP02050001003':
-        success = false;
-        error = 'Something went wrong';
+        errorMsg = 'Something went wrong';
         break;
       case 'DP02050001007':
-        success = false;
-        error = 'Transaction with given external id, channel already exists';
+        errorMsg = 'Transaction with given external id, channel already exists';
         break;
       case 'DP02050001015':
-        success = false;
-        error = 'Validation Error';
+        errorMsg = 'Validation Error';
         break;
       case 'DP02050001016':
-        success = false;
-        error = 'Invalid nickname. Please try again';
+        errorMsg = 'Invalid nickname. Please try again';
         break;
       case 'DP02050001017':
-        success = false;
-        error = 'Invalid msisdn. Please try again';
+        errorMsg = 'Invalid msisdn. Please try again';
         break;
       case 'DP02050001001':
-        success = true;
-        error = 'SUCCESS';
+        errorMsg = 'SUCCESS';
         break;
       default:
-        success = false;
-        error = 'no response from AutoAllocation Service';
+        errorMsg = 'no response from AutoAllocation Service';
         break;
     }
 
-    return { success, error };
+    return { errorMsg };
   },
 };
 

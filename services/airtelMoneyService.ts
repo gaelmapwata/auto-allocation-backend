@@ -72,13 +72,16 @@ const AirtelMoneyService = {
       axios.post(`${process.env.AUTO_ALLOCATION_URL}`, formData, { headers })
         .then(({ data }: { data: AutoAllocationResponseI }) => {
           // eslint-disable-next-line max-len
-          const messageStatusCode = ActionCodeAutoAllocation.getActionCodeAutoAllocation(data.status.response_code);
-          if (messageStatusCode.success) {
+
+          if (data.status.success) {
             resolve(data);
           } else {
+            const { errorMsg } = ActionCodeAutoAllocation
+              .getActionCodeAutoAllocation(data.status.response_code);
+
             AirtelMoneyService
-              .setAirtelMoneyErrorOnTransaction(transaction, messageStatusCode.error);
-            reject(new AppError(messageStatusCode.error, 400));
+              .setAirtelMoneyErrorOnTransaction(transaction, errorMsg);
+            reject(new AppError(errorMsg, 400));
           }
         })
         .catch((err: Error) => {

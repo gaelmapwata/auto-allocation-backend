@@ -29,7 +29,10 @@ export interface AutoAllocationResponseI {
     }
   },
   status: {
-    response_code: string
+    response_code: string,
+    code: string,
+    success: boolean,
+    message: string
   }
 }
 
