@@ -4,13 +4,13 @@ import { parseString } from 'xml2js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import xmlbuilder from 'xmlbuilder';
 import { format } from 'date-fns';
-import TransactionFinacle from '../models/TransactionFinacle';
+import FinacleTransaction from '../models/FinacleTransaction';
 import ActionCodeFinacleUtilities from '../utils/actionCodeFinacle';
 import AppError from '../types/CustomError';
 
 export default {
   // eslint-disable-next-line max-len
-  sendTransaction: (transactionFinacle: TransactionFinacle) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
+  sendTransaction: (transactionFinacle: FinacleTransaction) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
     const tranDateTime = new Date();
     const formatTranDateTime = format(tranDateTime, 'yyyyMMddHHmmss');
     const formatValueDate = format(tranDateTime, 'yyyyMMdd');

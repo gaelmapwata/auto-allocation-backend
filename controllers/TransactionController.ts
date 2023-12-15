@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import transactionValidators from '../validators/transactionValidators';
 import Transaction from '../models/Transaction';
-import FinacleTransaction from '../models/FinacleTransaction';
+// import FinacleTransaction from '../models/FinacleTransaction';
 import TransactionAirtelMoney from '../models/TransactionAirtelMoney';
 import TransactionFinacleController from './TransactionFinacleController';
-import TransactionFinacleService from '../services/transactionFinacleService';
+// import TransactionFinacleService from '../services/transactionFinacleService';
 import airtelMoneyService from '../services/airtelMoneyService';
 import errorHandlerService from '../services/ErrorHandlerService';
 
