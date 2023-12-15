@@ -39,6 +39,7 @@ export default {
           libelle: newTransaction.msisdn,
           userId: (req as any).userId,
           transactionId: newTransaction.id,
+          accountNumber: req.body.accountNumber,
         });
         // eslint-disable-next-line max-len
         // const { stan, tranDateTime } = await TransactionFinacleService.sendTransaction(transactionFinacle);
