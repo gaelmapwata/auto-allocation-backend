@@ -2,9 +2,12 @@ import { Request, Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import transactionValidators from '../validators/transactionValidators';
 import Transaction from '../models/Transaction';
+import FinacleTransaction from '../models/FinacleTransaction';
+import TransactionAirtelMoney from '../models/TransactionAirtelMoney';
 import TransactionFinacleController from './TransactionFinacleController';
-
-// import TransactionFinacleService from '../services/transactionFinacleService';
+import TransactionFinacleService from '../services/transactionFinacleService';
+import airtelMoneyService from '../services/airtelMoneyService';
+import errorHandlerService from '../services/ErrorHandlerService';
 
 export default {
   storeTransaction: [
@@ -28,9 +31,30 @@ export default {
           (req as any).userId,
           newTransaction.id,
         );
-        return res.status(201).json(transactionFinacle);
+        // eslint-disable-next-line max-len
+        // const { stan, tranDateTime } = await TransactionFinacleService.sendTransaction(transactionFinacle);
+        // await FinacleTransaction.update(
+        //   { stan, tranDateTime },
+        //   { where: { transactionId: newTransaction.id } },
+        // );
+
+        // eslint-disable-next-line max-len
+        const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(newTransaction.amount, newTransaction.msisdn, newTransaction.note);
+        await TransactionAirtelMoney.create(
+          {
+            mq_txn_id: (resultAirtelMoneyService as any).data.additional_info.mq_txn_id,
+            reference_id: (resultAirtelMoneyService as any).data.transaction.reference_id,
+            airtel_money_id: (resultAirtelMoneyService as any).data.transaction.airtel_money_id,
+            transaction_airtel_money_id: (resultAirtelMoneyService as any).data.transaction.id,
+            // eslint-disable-next-line max-len
+            transaction_airtel_money_status: (resultAirtelMoneyService as any).data.transaction.status,
+            transactionId: newTransaction.id,
+          },
+        );
+
+        return res.status(201).json(resultAirtelMoneyService);
       } catch (error) {
-        res.status(500).json(error);
+        return errorHandlerService.handleResponseError(res, error as Error);
       }
     },
   ],

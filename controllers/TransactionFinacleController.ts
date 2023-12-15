@@ -4,12 +4,12 @@ import { UBAUtilities } from '../utils/uba';
 
 export default {
   // eslint-disable-next-line max-len
-  saveTransactionFinacle: async (transAmt:number, tranCrncyCode:string, reservedFld1:string, userId:number, transactionId:number) => {
+  saveTransactionFinacle: async (tranAmt:number, tranCrncyCode:string, reservedFld1:string, userId:number, transactionId:number) => {
     const user = await User.findByPk(userId);
     const transactionFinacle = await FinacleTransaction.create({
-      transAmt,
+      tranAmt,
       tranCrncyCode,
-      contryCode: 'COD',
+      countryCode: 'COD',
       drAcctNum: tranCrncyCode === 'CDF' ? user?.accountNumberCDF : user?.accountNumberUSD,
       crAcctNum: UBAUtilities.getAccountTocredited(tranCrncyCode),
       reservedFld1: `Auto Allocation ${reservedFld1}`,

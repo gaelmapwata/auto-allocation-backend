@@ -10,7 +10,7 @@ import AppError from '../types/CustomError';
 
 export default {
   // eslint-disable-next-line max-len
-  sendTransaction: (transactionFinacle: TransactionFinacle, idTransaction:number) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
+  sendTransaction: (transactionFinacle: TransactionFinacle) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
     const tranDateTime = new Date();
     const formatTranDateTime = format(tranDateTime, 'yyyyMMddHHmmss');
     const formatValueDate = format(tranDateTime, 'yyyyMMdd');
@@ -38,7 +38,7 @@ export default {
             <CR_ACCT_NUM>${transactionFinacle.crAcctNum}</CR_ACCT_NUM>
             <TERMINAL_NAME_LOC>TIPS</TERMINAL_NAME_LOC>
             <RESERVED_FLD_1>
-              Paiement Auto Allocation ${idTransaction}
+              ${transactionFinacle.reservedFld1}
             </RESERVED_FLD_1>
           </C24TRANREQ>`)
       .up() // End arg0
