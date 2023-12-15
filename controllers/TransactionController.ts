@@ -39,15 +39,15 @@ export default {
         // );
 
         // eslint-disable-next-line max-len
-        const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(newTransaction.amount, newTransaction.msisdn, newTransaction.note);
+        const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(newTransaction);
         await TransactionAirtelMoney.create(
           {
-            mq_txn_id: (resultAirtelMoneyService as any).data.additional_info.mq_txn_id,
-            reference_id: (resultAirtelMoneyService as any).data.transaction.reference_id,
-            airtel_money_id: (resultAirtelMoneyService as any).data.transaction.airtel_money_id,
-            transaction_airtel_money_id: (resultAirtelMoneyService as any).data.transaction.id,
+            mq_txn_id: resultAirtelMoneyService.data.additional_info.mq_txn_id,
+            reference_id: resultAirtelMoneyService.data.transaction.reference_id,
+            airtel_money_id: resultAirtelMoneyService.data.transaction.airtel_money_id,
+            transaction_airtel_money_id: resultAirtelMoneyService.data.transaction.id,
             // eslint-disable-next-line max-len
-            transaction_airtel_money_status: (resultAirtelMoneyService as any).data.transaction.status,
+            transaction_airtel_money_status: resultAirtelMoneyService.data.transaction.status,
             transactionId: newTransaction.id,
           },
         );

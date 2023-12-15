@@ -15,3 +15,26 @@ export interface CheckKYCResponseI {
     success: boolean
   }
 }
+
+export interface AutoAllocationResponseI {
+  data: {
+    additional_info: {
+      mq_txn_id: string
+    },
+    transaction: {
+      reference_id: string,
+      airtel_money_id: string,
+      id: string,
+      status: string,
+    }
+  },
+  status: {
+    response_code: string
+  }
+}
+
+export interface AirtelLoginResponseI {
+  data: {
+    access_token: string
+  }
+}

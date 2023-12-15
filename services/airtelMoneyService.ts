@@ -2,10 +2,11 @@ import axios from 'axios';
 import AppError from '../types/CustomError';
 import generateNumeric from '../utils/utilities';
 import ActionCodeAutoAllocation from '../utils/actionCodeAutoAllocation';
-import { CheckKYCResponseI } from '../types/AirtelMoney';
+import { AirtelLoginResponseI, AutoAllocationResponseI, CheckKYCResponseI } from '../types/AirtelMoney';
+import Transaction from '../models/Transaction';
 
 const AirtelMoneyService = {
-  login: () : Promise<any> => new Promise((resolve, reject) => {
+  login: () : Promise<AirtelLoginResponseI> => new Promise((resolve, reject) => {
     const userData = {
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
@@ -45,7 +46,8 @@ const AirtelMoneyService = {
     });
   }),
 
-  autoAllocation: (amount:number, msisdn:string, note:string) => new Promise((resolve, reject) => {
+  // eslint-disable-next-line max-len
+  autoAllocation: (transaction: Transaction): Promise<AutoAllocationResponseI> => new Promise((resolve, reject) => {
     AirtelMoneyService.login().then((user) => {
       const headers = {
         'Content-Type': 'application/json',
@@ -57,31 +59,45 @@ const AirtelMoneyService = {
       const formData = {
         transaction: {
           id: generateNumeric.generateRandomIdAutoAllocation(),
-          amount: amount.toString(),
+          amount: transaction.amount.toString(),
           payee: {
             address_type: 'MOBILE',
-            msisdn,
+            msisdn: transaction.msisdn,
           },
         },
-        note,
+        note: transaction.note,
         additional_info: {},
       };
 
-      axios.post(`${process.env.AUTO_ALLOCATION__URL}`, formData, { headers })
-        .then(({ data }) => {
+      axios.post(`${process.env.AUTO_ALLOCATION_URL}`, formData, { headers })
+        .then(({ data }: { data: AutoAllocationResponseI }) => {
           // eslint-disable-next-line max-len
           const messageStatusCode = ActionCodeAutoAllocation.getActionCodeAutoAllocation(data.status.response_code);
           if (messageStatusCode.success) {
             resolve(data);
           } else {
+            AirtelMoneyService
+              .setAirtelMoneyErrorOnTransaction(transaction, messageStatusCode.error);
             reject(new AppError(messageStatusCode.error, 400));
           }
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           reject(err);
+          AirtelMoneyService
+            .setAirtelMoneyErrorOnTransaction(transaction, err.message);
         });
     });
   }),
+
+  setAirtelMoneyErrorOnTransaction: (transaction: Transaction, error: string) => {
+    Transaction.update({
+      errorAirtelMoney: error,
+    }, {
+      where: {
+        id: transaction.id,
+      },
+    });
+  },
 };
 
 export default AirtelMoneyService;
