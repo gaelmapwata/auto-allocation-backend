@@ -58,7 +58,7 @@ const AirtelMoneyService = {
 
       const formData = {
         transaction: {
-          id: generateNumeric.generateRandomIdAutoAllocation(),
+          id: `${transaction.id}00${new Date().getTime()}`,
           amount: transaction.amount.toString(),
           payee: {
             address_type: 'MOBILE',

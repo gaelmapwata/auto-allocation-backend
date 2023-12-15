@@ -46,6 +46,12 @@ module.exports = {
       errorAirtelMoney: {
         type: Sequelize.STRING,
       },
+      error: {
+        type: Sequelize.STRING,
+      },
+      success: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

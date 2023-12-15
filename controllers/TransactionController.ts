@@ -9,28 +9,37 @@ import TransactionFinacleController from './TransactionFinacleController';
 import airtelMoneyService from '../services/airtelMoneyService';
 import errorHandlerService from '../services/ErrorHandlerService';
 
+function updateTransactionById(id: number, data: {[key:string]: string | boolean}) {
+  return Transaction.update(data, {
+    where: {
+      id,
+    },
+  });
+}
+
 export default {
   storeTransaction: [
     checkSchema(transactionValidators.storeTransactionSchema),
     async (req: Request, res: Response) => {
+      let newTransaction;
       try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({ msg: errors.array() });
         }
-        const newTransaction = await Transaction.create({
+        newTransaction = await Transaction.create({
           ...req.body,
           note: 'Allocation Deallocation',
           userId: (req as any).userId,
         });
         // eslint-disable-next-line max-len
-        const transactionFinacle = await TransactionFinacleController.saveTransactionFinacle(
-          newTransaction.amount,
-          newTransaction.currency,
-          newTransaction.msisdn,
-          (req as any).userId,
-          newTransaction.id,
-        );
+        const transactionFinacle = await TransactionFinacleController.saveTransactionFinacle({
+          amount: newTransaction.amount,
+          currency: newTransaction.currency,
+          libelle: newTransaction.msisdn,
+          userId: (req as any).userId,
+          transactionId: newTransaction.id,
+        });
         // eslint-disable-next-line max-len
         // const { stan, tranDateTime } = await TransactionFinacleService.sendTransaction(transactionFinacle);
         // await FinacleTransaction.update(
@@ -52,8 +61,14 @@ export default {
           },
         );
 
-        return res.status(201).json(resultAirtelMoneyService);
+        updateTransactionById(newTransaction.id, { success: true });
+
+        return res.status(201).json(newTransaction);
       } catch (error) {
+        console.log(error);
+        if (newTransaction) {
+          updateTransactionById(newTransaction.id, { error: (error as Error).message });
+        }
         return errorHandlerService.handleResponseError(res, error as Error);
       }
     },

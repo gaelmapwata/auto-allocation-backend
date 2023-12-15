@@ -52,6 +52,12 @@ export default class Transaction extends Model {
   @Column
     errorAirtelMoney!: string;
 
+  @Column
+    error!: string;
+
+  @Column
+    success!: boolean;
+
   @BelongsTo(() => User)
     user!: User;
 }
