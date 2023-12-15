@@ -39,6 +39,15 @@ const RESSOURCES: IRessource[] = [
       { name: 'all', slug: 'RESSOURCE:ALL' },
     ],
   },
+  {
+    name: 'transaction',
+    permissions: [
+      { name: 'read', slug: 'TRANSACTION:READ' },
+      { name: 'create', slug: 'TRANSACTION:CREATE' },
+      { name: 'create-with-manual-account', slug: 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT' },
+      { name: 'all', slug: 'TRANSACTION:ALL' },
+    ],
+  },
 ];
 
 module.exports = {
