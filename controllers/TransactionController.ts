@@ -28,19 +28,15 @@ function updateTransactionById(id: number, data: {[key:string]: string | boolean
 function generateFilterAttributes(req: Request):any {
   const filterAttributes: any = {};
   if (req.query.msisdn) {
-    filterAttributes.msisdn = req.query.msisdn;
+    filterAttributes.msisdn = {
+      [Op.like]: `%${req.query.msisdn}%`,
+    };
   }
   if (req.query.currency) {
     filterAttributes.currency = req.query.currency;
   }
-  if (req.query.lastName) {
-    filterAttributes.lastName = req.query.lastName;
-  }
-  if (req.query.lastName) {
-    filterAttributes.lastName = req.query.lastName;
-  }
-  if (req.query.firstName) {
-    filterAttributes.firstName = req.query.firstName;
+  if (['1', 'true'].includes(req.query.success as string)) {
+    filterAttributes.success = true;
   }
   if (req.query.startDate || req.query.endDate) {
     filterAttributes[Op.and] = [
@@ -97,6 +93,12 @@ export default {
         raw: true,
         attributes: {
           exclude: ['updatedAt', 'deletedAt'],
+          include: [[
+            Sequelize.literal(`(
+              SELECT email FROM users WHERE users.id = Transaction.userId
+            )`),
+            'user_email',
+          ]],
         },
       });
 

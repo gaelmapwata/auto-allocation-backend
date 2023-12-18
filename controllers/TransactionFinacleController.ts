@@ -19,9 +19,9 @@ async function getDrAccountNUmber(
   }
 
   if (payload.currency === 'CDF' && !payload.accountNumberCDF) {
-    throw new AppError('Vous n\'avez pas de compte en CDF configuré', 400);
+    throw new AppError('L\'utilisateur connecté n\'a pas de compte en CDF configuré', 400);
   } else if (payload.currency === 'USD' && !payload.accountNumberUSD) {
-    throw new AppError('Vous n\'avez pas de compte en USD configuré', 400);
+    throw new AppError('L\'utilisateur connecté n\'a pas de compte en USD configuré', 400);
   } else {
     return payload.currency === 'CDF' ? payload.accountNumberCDF : payload.accountNumberUSD;
   }
