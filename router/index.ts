@@ -127,5 +127,9 @@ router.get('/check-kyc/:msisdn', [authJwt.verifyToken], AirtelMoneyController.ch
  */
 
 router.post('/transactions', [authJwt.verifyToken], TransactionController.storeTransaction as any);
+router.get(
+  '/transactions/stats',
+  TransactionController.getStats,
+);
 
 export default router;

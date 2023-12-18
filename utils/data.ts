@@ -19,3 +19,15 @@ export const lastDayOfWeekDate = () => {
   const lastDay = today.setDate(today.getDate() - today.getDay() + 6);
   return format(lastDay, 'yyyy-MM-dd');
 };
+
+export const getFirstDayOfMonth = () => {
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  return format(firstDay, 'yyyy-MM-dd');
+};
+
+export const getLastDayOfMonth = () => {
+  const today = new Date();
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return format(lastDay, 'yyyy-MM-dd');
+};
