@@ -15,27 +15,33 @@ module.exports = {
         type: Sequelize.DATE,
       },
       tranAmt: {
+        allowNull: false,
         type: Sequelize.DECIMAL(18, 9),
       },
       processingCode: {
         type: Sequelize.INTEGER,
       },
       tranCrncyCode: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       countryCode: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       valueDate: {
         type: Sequelize.DATE,
       },
       drAcctNum: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       crAcctNum: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       reservedFld1: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       drAcctNo: {
@@ -64,7 +70,6 @@ module.exports = {
         type: Sequelize.DATE,
       },
       deletedAt: {
-        allowNull: true,
         type: Sequelize.DATE,
       },
     });
