@@ -2,6 +2,7 @@ import FinacleTransaction from '../models/FinacleTransaction';
 import User from '../models/User';
 import { UBAUtilities } from '../utils/uba';
 import UserService from '../services/UserService';
+import AppError from '../types/CustomError';
 
 async function getDrAccountNUmber(
   payload:{
@@ -12,11 +13,18 @@ async function getDrAccountNUmber(
     currency: string
   },
 ) : Promise<string> {
-  const transactionPermission = await UserService.userByIdHasPermission(payload.userId, 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT');
-  if (transactionPermission) {
+  const userHasPermissionToSetManualAccountToDebit = await UserService.userByIdHasPermission(payload.userId, 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT');
+  if (userHasPermissionToSetManualAccountToDebit) {
     return payload.accountNumber;
   }
-  return payload.currency === 'CDF' ? payload.accountNumberCDF : payload.accountNumberUSD;
+
+  if (payload.currency === 'CDF' && !payload.accountNumberCDF) {
+    throw new AppError('Vous n\'avez pas de compte en CDF configuré', 400);
+  } else if (payload.currency === 'USD' && !payload.accountNumberUSD) {
+    throw new AppError('Vous n\'avez pas de compte en USD configuré', 400);
+  } else {
+    return payload.currency === 'CDF' ? payload.accountNumberCDF : payload.accountNumberUSD;
+  }
 }
 
 export default {
