@@ -1,7 +1,8 @@
 import {
-  Table, Column, Model, BelongsToMany,
+  Table, Column, Model, BelongsToMany, HasMany,
 } from 'sequelize-typescript';
 import Role from './Role';
+import Transaction from './Transaction';
 import UserRole from './UserRole';
 
 @Table({
@@ -23,4 +24,7 @@ export default class User extends Model {
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];
+
+  @HasMany(() => Transaction)
+    transactions!: Transaction[];
 }

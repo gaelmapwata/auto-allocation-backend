@@ -14,15 +14,15 @@ export default class Log extends Model {
   // Propriétés fillable
   static fillable: string[] = ['action', 'description', 'userId'];
 
-  @ForeignKey(() => User)
-  @Column
-    userId!: number;
-
   @Column
     action!: string;
 
   @Column
     description!: string;
+
+  @ForeignKey(() => User)
+  @Column
+    userId!: number;
 
   @BelongsTo(() => User)
     user!: User;

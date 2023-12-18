@@ -1,8 +1,10 @@
 import {
-  Table, Column, Model, ForeignKey, BelongsTo,
+  Table, Column, Model, ForeignKey, BelongsTo, HasOne,
 } from 'sequelize-typescript';
 
 import User from './User';
+import TransactionAirtelMoney from './TransactionAirtelMoney';
+import FinacleTransaction from './FinacleTransaction';
 
 @Table({
   tableName: 'transactions',
@@ -24,7 +26,6 @@ export default class Transaction extends Model {
     'errorAirtelMoney',
   ];
 
-  @ForeignKey(() => User)
   @Column
     msisdn!: string;
 
@@ -44,9 +45,6 @@ export default class Transaction extends Model {
     note!: string;
 
   @Column
-    userId!: number;
-
-  @Column
     errorFinacle!: string;
 
   @Column
@@ -58,6 +56,16 @@ export default class Transaction extends Model {
   @Column
     success!: boolean;
 
+  @ForeignKey(() => User)
+  @Column
+    userId!: number;
+
   @BelongsTo(() => User)
     user!: User;
+
+  @HasOne(() => TransactionAirtelMoney)
+    transactionAirtelMoney!: TransactionAirtelMoney;
+
+  @HasOne(() => FinacleTransaction)
+    finacleTransaction!: FinacleTransaction;
 }
