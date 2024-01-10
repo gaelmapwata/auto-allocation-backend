@@ -29,12 +29,12 @@ export default {
         return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
       }
 
-      // const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
-      // if (!canLogged) {
-      //   return res.status(401).send({
-      //     msg: 'Email ou Mot de passe invalide',
-      //   });
-      // }
+      const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
+      if (!canLogged) {
+        return res.status(401).send({
+          msg: 'Email ou Mot de passe invalide',
+        });
+      }
 
       // Destroy expired OTP
       Otp.destroy({

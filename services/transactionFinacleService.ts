@@ -32,7 +32,7 @@ export default {
             <TRAN_AMT>${transactionFinacle.tranAmt}</TRAN_AMT>
             <PROCESSING_CODE>50</PROCESSING_CODE>
             <TRAN_CRNCY_CODE>${transactionFinacle.tranCrncyCode}</TRAN_CRNCY_CODE>
-            <COUNTRY_CODE>'COD'</COUNTRY_CODE>
+            <COUNTRY_CODE>COD</COUNTRY_CODE>
             <VALUE_DATE>${formatValueDate}</VALUE_DATE>
             <DR_ACCT_NUM>${transactionFinacle.drAcctNum}</DR_ACCT_NUM>
             <CR_ACCT_NUM>${transactionFinacle.crAcctNum}</CR_ACCT_NUM>
@@ -50,8 +50,10 @@ export default {
       'Content-Type': 'text/xml;charset=UTF-8',
       Authorization: `Basic ${Buffer.from('GUPAY:waterfall').toString('base64')}`,
     };
+
     axios.post(process.env.FINACLE_URL as string, xmlData, { headers })
       .then((response) => {
+        console.log(`response: ${response.data}`);
         parseString(response.data, (err: Error | null, result: any) => {
           const returnXmlString = result['NS1:Envelope']['NS1:Body'][0]['NS2:sendTransactionResponse'][0].return[0];
           parseString(returnXmlString, (error: Error | null, responseData: any) => {

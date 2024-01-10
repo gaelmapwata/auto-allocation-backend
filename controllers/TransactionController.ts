@@ -8,7 +8,7 @@ import FinacleTransaction from '../models/FinacleTransaction';
 import TransactionAirtelMoney from '../models/TransactionAirtelMoney';
 import User from '../models/User';
 import TransactionFinacleController from './TransactionFinacleController';
-// import TransactionFinacleService from '../services/transactionFinacleService';
+import TransactionFinacleService from '../services/transactionFinacleService';
 import airtelMoneyService from '../services/airtelMoneyService';
 import errorHandlerService from '../services/ErrorHandlerService';
 import sequelize from '../sequelize-instance';
@@ -140,11 +140,11 @@ export default {
           accountNumber: req.body.accountNumber,
         });
         // eslint-disable-next-line max-len
-        // const { stan, tranDateTime } = await TransactionFinacleService.sendTransaction(transactionFinacle);
-        // await FinacleTransaction.update(
-        //   { stan, tranDateTime },
-        //   { where: { transactionId: newTransaction.id } },
-        // );
+        const { stan, tranDateTime } = await TransactionFinacleService.sendTransaction(transactionFinacle);
+        await FinacleTransaction.update(
+          { stan, tranDateTime },
+          { where: { transactionId: newTransaction.id } },
+        );
 
         // eslint-disable-next-line max-len
         const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(newTransaction);

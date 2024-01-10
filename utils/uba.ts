@@ -4,9 +4,9 @@ import AppError from '../types/CustomError';
 export const UBAUtilities = {
   getAccountToCredited(devise: string) {
     if (devise === 'CDF') {
-      return '025010036315';
+      return '015020036193';
     } if (devise === 'USD') {
-      return '025010036325';
+      return '025010015765';
     }
     throw new AppError('Aucune devise fournie', 400);
   },
