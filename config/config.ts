@@ -40,6 +40,11 @@ export const production = {
     //   ca: readFileSync(`${__dirname}/mysql-ca-main.crt`),
     // },
   },
+  EMAIL_SENDER: 'app.notification@ubagroup.com',
+  OTP_EMAIL_SUBJECT: 'AUTO ALLOCATION  OTP',
+  OTP_EMAIL_MESSAGE:
+      '<![CDATA[<html><body>Hello!<br/><p>Below your OTP to access the agency banking plateform</p><p><b>:otp</b><br/></p><br/>Warm Regards,</body></html>]]>',
+  EMAIL_NOTIFICATION_API_URL: 'http://10.100.5.195:1867/service.asmx',
   logging: false,
   seederStorage: 'sequelize',
 };

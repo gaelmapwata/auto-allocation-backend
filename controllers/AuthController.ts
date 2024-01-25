@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import add from 'date-fns/add';
+import { production } from '../config/config';
 import activeDirectoryService from '../services/activeDirectoryService';
 
 import User from '../models/User';
@@ -8,7 +9,8 @@ import Otp from '../models/Otp';
 import generateNumeric from '../utils/utilities';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
-import { sendMailFromEmailTemplates } from '../utils/mail';
+// import { sendMailFromEmailTemplates } from '../utils/mail';
+import utilHelper from '../utils/utilHelper';
 import errorHandlerService from '../services/ErrorHandlerService';
 
 const jwt = require('jsonwebtoken');
@@ -53,11 +55,18 @@ export default {
         expirationDate: add(new Date(), { minutes: OTP_MINUTES_VALIDITY }).toISOString().split('.')[0],
       });
 
-      sendMailFromEmailTemplates({
-        mailTo: newOtp.email,
-        locals: { otp: newOtp.otp },
-        template: 'login-otp',
-      });
+      utilHelper.sendEmailNotification(
+        newOtp.email.trim(),
+        newOtp.email.trim(),
+        production.EMAIL_SENDER.trim(),
+        production.OTP_EMAIL_SUBJECT,
+        production.OTP_EMAIL_MESSAGE.replace(/:otp/gi, newOtp.otp),
+      );
+      // sendMailFromEmailTemplates({
+      //   mailTo: newOtp.email,
+      //   locals: { otp: newOtp.otp },
+      //   template: 'login-otp',
+      // });
       return res.status(200).json({ msg: 'authentification réussie' });
     } catch (error) {
       return errorHandlerService.handleResponseError(res, error as Error);
