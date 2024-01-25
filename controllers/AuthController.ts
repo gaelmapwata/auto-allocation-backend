@@ -12,6 +12,7 @@ import Permission from '../models/Permission';
 // import { sendMailFromEmailTemplates } from '../utils/mail';
 import utilHelper from '../utils/utilHelper';
 import errorHandlerService from '../services/ErrorHandlerService';
+import LogHelper from '../utils/logHelper';
 
 const jwt = require('jsonwebtoken');
 
@@ -30,6 +31,8 @@ export default {
       if (!user) {
         return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
       }
+
+      LogHelper.info(`Auth | user ${req.body.email} trying to login`);
 
       const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
       if (!canLogged) {
@@ -62,6 +65,9 @@ export default {
         production.OTP_EMAIL_SUBJECT,
         production.OTP_EMAIL_MESSAGE.replace(/:otp/gi, newOtp.otp),
       );
+
+      LogHelper.info(`Auth | user ${req.body.email} successful logged with active directory, otp sended`);
+
       // sendMailFromEmailTemplates({
       //   mailTo: newOtp.email,
       //   locals: { otp: newOtp.otp },
@@ -101,6 +107,8 @@ export default {
       });
 
       otp.destroy();
+
+      LogHelper.info(`Auth | user ${req.body.email} successful logged with otp verification`);
 
       return res.status(200).json({
         token,

@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import User from '../models/User';
 import userValidators from '../validators/userValidators';
 import Role from '../models/Role';
+import LogHelper from '../utils/logHelper';
+import { Request } from '../types/ExpressOverride';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -51,6 +53,8 @@ export default {
         if (roles) {
           await user.$add('roles', roles);
         }
+
+        LogHelper.info(`User | new user (${req.body.email}) created by user (${req.userId})`);
 
         res.status(201).json(user);
       } catch (error) {
@@ -114,6 +118,8 @@ export default {
         if (roles && newUser) {
           await newUser.$set('roles', roles);
         }
+
+        LogHelper.info(`User | user (${id}) updated by user (${req.userId})`);
         res.status(200).json(newUser);
       } catch (error) {
         res.status(500).json(error);
@@ -127,6 +133,9 @@ export default {
       const user = await User.destroy({
         where: { id },
       });
+
+      LogHelper.info(`User | user (${id}) deleted by user (${req.userId})`);
+
       res.status(204).json(user);
     } catch (error) {
       res.status(500).json(error);

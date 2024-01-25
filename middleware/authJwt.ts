@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import User from '../models/User';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
+import { Request } from '../types/ExpressOverride';
 
 const jwt = require('jsonwebtoken');
 
@@ -28,7 +29,7 @@ export default {
           message: 'Veuillez vous connectez !',
         });
       }
-      (req as any).userId = decoded.id;
+      req.userId = decoded.id;
       next();
     });
   },
