@@ -7,6 +7,7 @@ import cors from 'cors';
 import path from 'path';
 import router from './router';
 import sequelize from './sequelize-instance';
+import LogHelper from './utils/logHelper';
 
 /**
  * Create express instance and initialize dotenv
@@ -70,4 +71,5 @@ const port = process.env.NODE_SERVER_PORT;
 server.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`app listening on port ${port}`);
+  LogHelper.info(`Server started on port ${port}`);
 });
