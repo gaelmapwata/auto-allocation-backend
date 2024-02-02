@@ -1,5 +1,5 @@
 import superAgent from 'superagent';
-import { production } from '../config/config';
+import { UBA_MAIL_CONFIGS } from '../config/config';
 
 export default {
   sendEmailNotification: (
@@ -25,7 +25,7 @@ export default {
     </soap:Envelope>`;
 
     return superAgent
-      .post(production.EMAIL_NOTIFICATION_API_URL)
+      .post(UBA_MAIL_CONFIGS.EMAIL_NOTIFICATION_API_URL)
       .type('text/xml')
       .send(request);
   },

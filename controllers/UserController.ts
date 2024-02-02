@@ -87,6 +87,8 @@ export default {
         const { roles } = (req.body as any);
         await user.$add('roles', roles);
 
+        LogHelper.info(`User | new roles given to user (${user.email}) by user (${req.userId})`);
+
         res.status(201).json(user);
       } catch (error) {
         res.status(500).json(error);
@@ -119,7 +121,7 @@ export default {
           await newUser.$set('roles', roles);
         }
 
-        LogHelper.info(`User | user (${id}) updated by user (${req.userId})`);
+        LogHelper.info(`User | user (${newUser?.email}) updated by user (${req.userId})`);
         res.status(200).json(newUser);
       } catch (error) {
         res.status(500).json(error);
@@ -130,13 +132,12 @@ export default {
   delete: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const user = await User.destroy({
-        where: { id },
-      });
+      const user = await User.findByPk(id);
+      user?.destroy();
 
-      LogHelper.info(`User | user (${id}) deleted by user (${req.userId})`);
+      LogHelper.info(`User | user (${user?.email}) deleted by user (${req.userId})`);
 
-      res.status(204).json(user);
+      res.status(204).json({});
     } catch (error) {
       res.status(500).json(error);
     }

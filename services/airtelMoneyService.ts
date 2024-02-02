@@ -4,9 +4,12 @@ import generateNumeric from '../utils/utilities';
 import ActionCodeAutoAllocation from '../utils/actionCodeAutoAllocation';
 import { AirtelLoginResponseI, AutoAllocationResponseI, CheckKYCResponseI } from '../types/AirtelMoney';
 import Transaction from '../models/Transaction';
+import LogHelper from '../utils/logHelper';
 
 const AirtelMoneyService = {
   login: () : Promise<AirtelLoginResponseI> => new Promise((resolve, reject) => {
+    LogHelper.info('Airtel Money | started login to the api');
+
     const userData = {
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
@@ -14,9 +17,11 @@ const AirtelMoneyService = {
     };
     axios.post(`${process.env.AUTH_AIRTEL_URL}`, userData)
       .then((response) => {
+        LogHelper.info('Airtel Money | successfully login to the api');
         resolve(response);
       })
       .catch((error) => {
+        LogHelper.info('Airtel Money | unsuccessfully login to the api');
         reject(error);
       });
   }),
@@ -68,12 +73,14 @@ const AirtelMoneyService = {
         note: transaction.note,
         additional_info: {},
       };
+      LogHelper.info(`Airtel Money | sending transaction to airtel api: ${JSON.stringify(formData)}`);
 
       axios.post(`${process.env.AUTO_ALLOCATION_URL}`, formData, { headers })
         .then(({ data }: { data: AutoAllocationResponseI }) => {
           // eslint-disable-next-line max-len
 
           if (data.status.success) {
+            LogHelper.info('Airtel Money | successfully send transaction to airtel api');
             resolve(data);
           } else {
             const { errorMsg } = ActionCodeAutoAllocation
@@ -81,11 +88,15 @@ const AirtelMoneyService = {
 
             AirtelMoneyService
               .setAirtelMoneyErrorOnTransaction(transaction, errorMsg);
+
+            LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${errorMsg}`);
             reject(new AppError(errorMsg, 400));
           }
         })
         .catch((err: Error) => {
           reject(err);
+          LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${err}`);
+
           AirtelMoneyService
             .setAirtelMoneyErrorOnTransaction(transaction, err.message);
         });

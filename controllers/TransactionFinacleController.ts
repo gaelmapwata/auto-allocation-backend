@@ -43,7 +43,7 @@ export default {
     const drAcctNum = await getDrAccountNUmber({
       accountNumber: payload.accountNumber,
       accountNumberCDF: user?.accountNumberCDF || '',
-      accountNumberUSD: user?.accountNumberCDF || '',
+      accountNumberUSD: user?.accountNumberUSD || '',
       currency: payload.currency,
       userId: payload.userId,
     });

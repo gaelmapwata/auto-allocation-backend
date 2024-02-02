@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import add from 'date-fns/add';
-import { production } from '../config/config';
 import activeDirectoryService from '../services/activeDirectoryService';
 
 import User from '../models/User';
@@ -13,6 +12,7 @@ import Permission from '../models/Permission';
 import utilHelper from '../utils/utilHelper';
 import errorHandlerService from '../services/ErrorHandlerService';
 import LogHelper from '../utils/logHelper';
+import { UBA_MAIL_CONFIGS } from '../config/config';
 
 const jwt = require('jsonwebtoken');
 
@@ -61,9 +61,9 @@ export default {
       utilHelper.sendEmailNotification(
         newOtp.email.trim(),
         newOtp.email.trim(),
-        production.EMAIL_SENDER.trim(),
-        production.OTP_EMAIL_SUBJECT,
-        production.OTP_EMAIL_MESSAGE.replace(/:otp/gi, newOtp.otp),
+        UBA_MAIL_CONFIGS.EMAIL_SENDER.trim(),
+        UBA_MAIL_CONFIGS.OTP_EMAIL_SUBJECT,
+        UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, newOtp.otp),
       );
 
       LogHelper.info(`Auth | user ${req.body.email} successful logged with active directory, otp sended`);
@@ -114,7 +114,7 @@ export default {
         token,
       });
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   getCurrentUser: async (req: Request, res: Response) => {
@@ -128,7 +128,7 @@ export default {
 
       return res.status(200).json(user);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   logout: (_: unknown, res: Response) => res.status(200).json({}),

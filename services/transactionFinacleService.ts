@@ -7,10 +7,13 @@ import { format } from 'date-fns';
 import FinacleTransaction from '../models/FinacleTransaction';
 import ActionCodeFinacleUtilities from '../utils/actionCodeFinacle';
 import AppError from '../types/CustomError';
+import LogHelper from '../utils/logHelper';
 
 export default {
   // eslint-disable-next-line max-len
   sendTransaction: (transactionFinacle: FinacleTransaction) => new Promise<{ stan: number, tranDateTime: Date }>((resolve, reject) => {
+    LogHelper.info(`Transaction Finacle | sending transaction (${transactionFinacle.transactionId}) to Finacle`);
+
     const tranDateTime = new Date();
     const formatTranDateTime = format(tranDateTime, 'yyyyMMddHHmmss');
     const formatValueDate = format(tranDateTime, 'yyyyMMdd');
@@ -51,28 +54,37 @@ export default {
       Authorization: `Basic ${Buffer.from('GUPAY:waterfall').toString('base64')}`,
     };
 
+    const logOnError = (err: Error | string) => {
+      LogHelper.info(`Transaction Finacle | error occurred on transaction (${transactionFinacle.transactionId}), error: ${err}}`);
+    };
+
     axios.post(process.env.FINACLE_URL as string, xmlData, { headers })
       .then((response) => {
-        console.log(`response: ${response.data}`);
         parseString(response.data, (err: Error | null, result: any) => {
           const returnXmlString = result['NS1:Envelope']['NS1:Body'][0]['NS2:sendTransactionResponse'][0].return[0];
           parseString(returnXmlString, (error: Error | null, responseData: any) => {
             if (error) {
-              reject(err);
+              logOnError(error);
+              reject(error);
             }
+
             const actionCode = responseData.C24TRANRES.ACTION_CODE[0];
             const messageStatusCode = ActionCodeFinacleUtilities.getActionCodeFinacle(actionCode);
             if (messageStatusCode.isvalidate) {
+              LogHelper.info(`Transaction Finacle | transaction (${transactionFinacle.transactionId}) successfully sended to Finacle`);
+
               resolve({
                 stan: +formatTranDateTime,
                 tranDateTime,
               });
             } else {
+              logOnError(messageStatusCode.error);
               reject(new AppError(messageStatusCode.error, 400));
             }
           });
         });
       }).catch((err) => {
+        logOnError(err);
         reject(err);
       });
   }),
