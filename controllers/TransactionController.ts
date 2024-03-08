@@ -139,7 +139,7 @@ export default {
 
         // eslint-disable-next-line max-len
         const transactionFinacle = await TransactionFinacleController.saveTransactionFinacle({
-          amount: newTransaction.amount,
+          amount: (parseFloat(String(newTransaction.amount)) * 100),
           currency: newTransaction.currency,
           libelle: newTransaction.msisdn,
           userId: (req as any).userId,

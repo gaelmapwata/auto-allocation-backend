@@ -33,13 +33,14 @@ export default {
             <STAN>${formatTranDateTime}</STAN>
             <TRAN_DATE_TIME>${formatTranDateTime}</TRAN_DATE_TIME>
             <TRAN_AMT>${transactionFinacle.tranAmt}</TRAN_AMT>
+            <TRAN_SUB_TYPE>BI</TRAN_SUB_TYPE>
             <PROCESSING_CODE>50</PROCESSING_CODE>
             <TRAN_CRNCY_CODE>${transactionFinacle.tranCrncyCode}</TRAN_CRNCY_CODE>
             <COUNTRY_CODE>COD</COUNTRY_CODE>
             <VALUE_DATE>${formatValueDate}</VALUE_DATE>
             <DR_ACCT_NUM>${transactionFinacle.drAcctNum}</DR_ACCT_NUM>
             <CR_ACCT_NUM>${transactionFinacle.crAcctNum}</CR_ACCT_NUM>
-            <TERMINAL_NAME_LOC>TIPS</TERMINAL_NAME_LOC>
+            <TERMINAL_NAME_LOC>Terminal</TERMINAL_NAME_LOC>
             <RESERVED_FLD_1>
               ${transactionFinacle.reservedFld1}
             </RESERVED_FLD_1>
@@ -57,6 +58,8 @@ export default {
     const logOnError = (err: Error | string) => {
       LogHelper.info(`Transaction Finacle | error occurred on transaction (${transactionFinacle.transactionId}), error: ${err}}`);
     };
+
+    console.log(xmlData);
 
     axios.post(process.env.FINACLE_URL as string, xmlData, { headers })
       .then((response) => {
