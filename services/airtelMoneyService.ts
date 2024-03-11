@@ -86,11 +86,13 @@ const AirtelMoneyService = {
             const { errorMsg } = ActionCodeAutoAllocation
               .getActionCodeAutoAllocation(data.status.response_code);
 
-            AirtelMoneyService
-              .setAirtelMoneyErrorOnTransaction(transaction, errorMsg);
+            const completeErrorMessage = `${errorMsg} - ${data.status.message}`;
 
-            LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${errorMsg}`);
-            reject(new AppError(errorMsg, 400));
+            AirtelMoneyService
+              .setAirtelMoneyErrorOnTransaction(transaction, completeErrorMessage);
+
+            LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${completeErrorMessage}`);
+            reject(new AppError(completeErrorMessage, 400));
           }
         })
         .catch((err: Error) => {

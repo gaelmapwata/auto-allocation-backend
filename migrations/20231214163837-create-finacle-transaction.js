@@ -9,10 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       stan: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       tranDateTime: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       tranAmt: {
         allowNull: false,

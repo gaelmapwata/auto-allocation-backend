@@ -30,10 +30,10 @@ export default class FinacleTransaction extends Model {
   ];
 
   @Column
-    stan!: number;
+    stan!: string;
 
 @Column
-  tranDateTime!: Date;
+  tranDateTime!: string;
 
 @Column
   tranAmt!: number;
