@@ -49,10 +49,7 @@ export default {
             <PROCESSING_CODE>50</PROCESSING_CODE>
             <TRAN_CRNCY_CODE>${transactionFinacle.tranCrncyCode}</TRAN_CRNCY_CODE>
             <COUNTRY_CODE>COD</COUNTRY_CODE>
-            <VALUE_DATE>${new DateUtil().formatDate(
-    new Date('2023-11-15'),
-    'YYYYMMDD',
-  )}</VALUE_DATE>
+            <VALUE_DATE>${new DateUtil().formatDate(new Date('2023-11-15'), 'YYYYMMDD')}</VALUE_DATE>
             <DR_ACCT_NUM>${transactionFinacle.drAcctNum}</DR_ACCT_NUM>
             <CR_ACCT_NUM>${transactionFinacle.crAcctNum}</CR_ACCT_NUM>
             <TERMINAL_NAME_LOC>Terminal</TERMINAL_NAME_LOC>
