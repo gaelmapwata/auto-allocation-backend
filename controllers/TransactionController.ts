@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import XLSX from 'xlsx';
-import { Op, Sequelize } from 'sequelize';
+import { Op, Sequelize, WhereOptions } from 'sequelize';
 import transactionValidators from '../validators/transactionValidators';
 import Transaction from '../models/Transaction';
 import FinacleTransaction from '../models/FinacleTransaction';
@@ -18,6 +18,8 @@ import {
 } from '../utils/data';
 import LogHelper from '../utils/logHelper';
 import { Request } from '../types/ExpressOverride';
+import UserService from '../services/UserService';
+import Permission from '../models/Permission';
 
 function updateTransactionById(id: number, data: {[key:string]: string | boolean}) {
   return Transaction.update(data, {
@@ -27,8 +29,16 @@ function updateTransactionById(id: number, data: {[key:string]: string | boolean
   });
 }
 
-function generateFilterAttributes(req: Request):any {
+async function generateFilterAttributes(req: Request):any {
   const filterAttributes: any = {};
+
+  const userCanSeeAllTransactions = await UserService
+    .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ);
+
+  if (!userCanSeeAllTransactions) {
+    filterAttributes.userId = req.userId;
+  }
+
   if (req.query.msisdn) {
     filterAttributes.msisdn = {
       [Op.like]: `%${req.query.msisdn}%`,
@@ -65,10 +75,11 @@ export default {
       const offset = (page - 1) * limit;
 
       const limitQuery = limit === -1 ? {} : { limit };
+      const whereFilter = await generateFilterAttributes(req);
 
       const TransactionCount = await Transaction.findAndCountAll({
         include: [TransactionAirtelMoney, FinacleTransaction, User],
-        where: generateFilterAttributes(req),
+        where: whereFilter,
         ...limitQuery,
         offset,
         order: [['createdAt', 'DESC']],
@@ -90,8 +101,11 @@ export default {
   exportInCSV: async (req: Request, res: Response) => {
     try {
       const filename = `transaction-auto-allocation-${new Date().toISOString().replace(/:/g, '-')}.xlsx`;
+
+      const whereFilter = await generateFilterAttributes(req);
+
       const transactions = await Transaction.findAll({
-        where: generateFilterAttributes(req),
+        where: whereFilter,
         raw: true,
         attributes: {
           exclude: ['updatedAt', 'deletedAt'],
@@ -189,8 +203,18 @@ export default {
     const firstDayMonth = getFirstDayOfMonth();
     const lastDayMonth = getLastDayOfMonth();
 
+    const userCanSeeAllTransactions = await UserService
+      .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ);
+
+    const whereFilter: WhereOptions = {};
+
+    if (!userCanSeeAllTransactions) {
+      whereFilter.userId = req.userId;
+    }
+
     const nbToday = await Transaction.count({
       where: {
+        ...whereFilter,
         success: true,
         [Op.and]: Sequelize.where(
           Sequelize.fn('DATE', Sequelize.col('createdAt')),
@@ -201,6 +225,7 @@ export default {
 
     const nbYesterday = await Transaction.count({
       where: {
+        ...whereFilter,
         success: true,
         [Op.and]: Sequelize.where(
           Sequelize.fn('DATE', Sequelize.col('createdAt')),
@@ -211,6 +236,7 @@ export default {
 
     const nbWeek = await Transaction.count({
       where: {
+        ...whereFilter,
         success: true,
         [Op.and]: [
           Sequelize.where(
@@ -227,6 +253,7 @@ export default {
 
     const nbMonth = await Transaction.count({
       where: {
+        ...whereFilter,
         success: true,
         [Op.and]: [
           Sequelize.where(

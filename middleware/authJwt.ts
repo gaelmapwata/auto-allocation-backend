@@ -1,9 +1,11 @@
 import { Response, NextFunction } from 'express';
 import User from '../models/User';
+import { Request } from '../types/ExpressOverride';
+import UserService from '../services/UserService';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
-import { Request } from '../types/ExpressOverride';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
 export default {
@@ -23,27 +25,36 @@ export default {
         message: 'Pas de Token fournis !',
       });
     }
+
     jwt.verify(token, process.env.JWT_SECRET, (err: null, decoded: any) => {
       if (err) {
         return res.status(401).json({
           message: 'Veuillez vous connectez !',
         });
       }
-      req.userId = decoded.id;
-      next();
+
+      User
+        .findByPk(decoded.id, { include: [{ model: Role, include: [Permission] }] })
+        .then((user) => {
+          if (user) {
+            req.userId = decoded.id;
+            req.user = user;
+          } else {
+            res.status(401).json({
+              message: 'Veuillez vous connectez !',
+            });
+          }
+          next();
+        });
     });
   },
+
   // eslint-disable-next-line max-len
-  checkPermission: (ressource: string, permission : string) => async (req: Request, res: Response, next: NextFunction) => {
-    const user = await User.findByPk((req as any).userId, {
-      include: [{ model: Role, include: [Permission] }],
-    });
-    if (
-      user?.roles.find((role) => role.permissions.find((p) => p.slug === `${ressource}:${permission}` || p.slug === `${ressource}:ALL`))
-    ) {
-      next();
-      return;
+  shouldHaveOneOfPermissions: (...permissions: string[]) => async (req: Request, res: Response, next: NextFunction) => {
+    const passed = await UserService.userHasOneOfPermissions(req.user as User, ...permissions);
+    if (passed) {
+      return next();
     }
-    res.status(403).json({ message: "Vous n'avez pas les accès nécessaires" });
+    return res.status(403).json({ message: "Vous n'avez pas les accès nécessaires" });
   },
 };

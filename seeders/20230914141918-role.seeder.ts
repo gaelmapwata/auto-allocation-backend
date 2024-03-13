@@ -13,14 +13,21 @@ const ROLES: IRole[] = [
   {
     name: 'admin',
     permissions: [
-      'ROLE:ALL',
-      'USER:ALL',
-      'RESSOURCE:ALL',
+      Permission.ROLE.ALL,
+      Permission.USER.ALL,
+      Permission.RESSOURCE.ALL,
+      Permission.AIRTEL.CHECK_KYC,
+      Permission.TRANSACTION.READ,
+      Permission.TRANSACTION.EXPORT,
     ],
   },
   {
     name: 'user',
-    permissions: [],
+    permissions: [
+      Permission.AIRTEL.CHECK_KYC,
+      Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
+      Permission.TRANSACTION.CREATE,
+    ],
   },
 ];
 

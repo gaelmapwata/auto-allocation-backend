@@ -1,4 +1,6 @@
+import Permission from '../models/Permission';
 import UserService from '../services/UserService';
+import { Request } from '../types/ExpressOverride';
 
 const transactionValidators = {
   storeTransactionSchema: {
@@ -32,9 +34,12 @@ const transactionValidators = {
     },
     accountNumber: {
       custom: {
-        options: async (value: string, { req }: { req: any }) => {
+        options: async (value: string, { req }: { req: unknown }) => {
           const userHasPermissionToSetManualAccountToDebit = await UserService
-            .userByIdHasPermission((req as any).userId, 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT');
+            .userByIdHasPermission(
+              (req as Request).userId as number,
+              Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT,
+            );
 
           if (userHasPermissionToSetManualAccountToDebit && !value) {
             throw new Error('Le champ "accountNumber" est obligatoire');

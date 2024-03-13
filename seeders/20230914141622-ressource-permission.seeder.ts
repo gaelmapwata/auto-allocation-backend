@@ -15,37 +15,44 @@ const RESSOURCES: IRessource[] = [
   {
     name: 'user',
     permissions: [
-      { name: 'create', slug: 'USER:CREATE' },
-      { name: 'update', slug: 'USER:UPDATE' },
-      { name: 'read', slug: 'USER:READ' },
-      { name: 'delete', slug: 'USER:DELETE' },
-      { name: 'all', slug: 'USER:ALL' },
+      { name: 'create', slug: Permission.USER.CREATE },
+      { name: 'update', slug: Permission.USER.UPDATE },
+      { name: 'read', slug: Permission.USER.READ },
+      { name: 'delete', slug: Permission.USER.DELETE },
+      { name: 'all', slug: Permission.USER.ALL },
     ],
   },
   {
     name: 'role',
     permissions: [
-      { name: 'create', slug: 'ROLE:CREATE' },
-      { name: 'update', slug: 'ROLE:UPDATE' },
-      { name: 'read', slug: 'ROLE:READ' },
-      { name: 'delete', slug: 'ROLE:DELETE' },
-      { name: 'all', slug: 'ROLE:ALL' },
+      { name: 'create', slug: Permission.ROLE.CREATE },
+      { name: 'update', slug: Permission.ROLE.UPDATE },
+      { name: 'read', slug: Permission.ROLE.READ },
+      { name: 'delete', slug: Permission.ROLE.DELETE },
+      { name: 'all', slug: Permission.ROLE.ALL },
     ],
   },
   {
     name: 'ressource',
     permissions: [
-      { name: 'read', slug: 'RESSOURCE:READ' },
-      { name: 'all', slug: 'RESSOURCE:ALL' },
+      { name: 'read', slug: Permission.RESSOURCE.READ },
+      { name: 'all', slug: Permission.RESSOURCE.ALL },
+    ],
+  },
+  {
+    name: 'airtel',
+    permissions: [
+      { name: 'check-kyc', slug: Permission.AIRTEL.CHECK_KYC },
     ],
   },
   {
     name: 'transaction',
     permissions: [
-      { name: 'read', slug: 'TRANSACTION:READ' },
-      { name: 'create', slug: 'TRANSACTION:CREATE' },
-      { name: 'create-with-manual-account', slug: 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT' },
-      { name: 'all', slug: 'TRANSACTION:ALL' },
+      { name: 'read', slug: Permission.TRANSACTION.READ },
+      { name: 'read-own-transactions', slug: Permission.TRANSACTION.READ_OWN_TRANSACTIONS },
+      { name: 'create', slug: Permission.TRANSACTION.CREATE },
+      { name: 'create-with-manual-account', slug: Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT },
+      { name: 'export', slug: Permission.TRANSACTION.EXPORT },
     ],
   },
 ];

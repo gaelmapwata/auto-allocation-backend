@@ -3,6 +3,7 @@ import User from '../models/User';
 import { UBAUtilities } from '../utils/uba';
 import UserService from '../services/UserService';
 import AppError from '../types/CustomError';
+import Permission from '../models/Permission';
 
 async function getDrAccountNUmber(
   payload:{
@@ -13,7 +14,8 @@ async function getDrAccountNUmber(
     currency: string
   },
 ) : Promise<string> {
-  const userHasPermissionToSetManualAccountToDebit = await UserService.userByIdHasPermission(payload.userId, 'TRANSACTION:CREATE-WITH-MANUAL-ACCOUNT');
+  const userHasPermissionToSetManualAccountToDebit = await UserService
+    .userByIdHasPermission(payload.userId, Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT);
   if (userHasPermissionToSetManualAccountToDebit) {
     return payload.accountNumber;
   }

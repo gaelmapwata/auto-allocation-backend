@@ -10,4 +10,11 @@ export default {
 
     return !!user?.roles.find((role) => !!role.permissions.find((p) => p.slug === permission || p.slug === `${permission.split(':')[0]}:ALL`));
   },
+
+  async userHasOneOfPermissions(user: User, ...permissions: string[]): Promise<boolean> {
+    return !!user.roles
+      .find((role) => role.permissions && !!role.permissions
+        .find((p) => permissions
+          .find((permission) => p.slug === permission || p.slug === `${permission.split(':')[0]}:ALL`)));
+  },
 };
