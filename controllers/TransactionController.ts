@@ -29,7 +29,7 @@ function updateTransactionById(id: number, data: {[key:string]: string | boolean
   });
 }
 
-async function generateFilterAttributes(req: Request):any {
+async function generateFilterAttributes(req: Request):Promise<any> {
   const filterAttributes: any = {};
 
   const userCanSeeAllTransactions = await UserService
