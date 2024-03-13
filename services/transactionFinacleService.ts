@@ -15,19 +15,20 @@ export default {
   sendTransaction: (transactionFinacle: FinacleTransaction) => new Promise<{ stan: string, tranDateTime: string, success:string }>((resolve, reject) => {
     LogHelper.info(`Transaction Finacle | sending transaction (${transactionFinacle.transactionId}) to Finacle`);
 
-    // const tranDateTime = new Date();
-    // const formatTranDateTime = format(tranDateTime, 'yyyyMMddHHmmss');
-    // const formatValueDate = format(tranDateTime, 'yyyyMMdd');
     const scaledAmount = (parseFloat(String(transactionFinacle.tranAmt)) * 100);
     const stan = Number(new Date().getTime().toString().substring(1));
     const tranDateTime = new DateUtil().formatDateDefault(null, 'YYYYMMDDHHMMSS');
 
     // for development
-    resolve({
-      stan: stan.toString(),
-      tranDateTime,
-      success: 'true',
-    });
+    // resolve({
+    //   stan: stan.toString(),
+    //   tranDateTime,
+    //   success: 'true',
+    // });
+
+    // TODO: check with Gael why VALUE_DATE value is define statically
+    // with ${new DateUtil().formatDate(new Date('2023-11-15'), 'YYYYMMDD')}
+    // and we don't use new DateUtil().formatDateDefault(null, 'YYYYMMDD')
 
     // for production
     const xmlData = xmlbuilder.create('soapenv:Envelope', {

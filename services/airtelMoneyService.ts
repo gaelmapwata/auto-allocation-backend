@@ -48,7 +48,10 @@ const AirtelMoneyService = {
         .catch((err) => {
           reject(err);
         });
-    });
+    })
+      .catch((err) => {
+        reject(err);
+      });
   }),
 
   // eslint-disable-next-line max-len
@@ -102,7 +105,10 @@ const AirtelMoneyService = {
           AirtelMoneyService
             .setAirtelMoneyErrorOnTransaction(transaction, err.message);
         });
-    });
+    })
+      .catch((err) => {
+        reject(err);
+      });
   }),
 
   setAirtelMoneyErrorOnTransaction: (transaction: Transaction, error: string) => {
