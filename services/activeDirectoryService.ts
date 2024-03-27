@@ -10,7 +10,8 @@ export default {
       .then(({ data }) => {
         resolve(data);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         reject(
           new AppError('Impossible de contacter le service Active Directory', 500),
         );

@@ -17,7 +17,7 @@ export default {
 
     const scaledAmount = (parseFloat(String(transactionFinacle.tranAmt)) * 100);
     const stan = Number(new Date().getTime().toString().substring(1));
-    const tranDateTime = new DateUtil().formatDateDefault(null, 'YYYYMMDDHHMMSS');
+    const tranDateTime = new DateUtil().formatDateDefault(new Date('2022-08-22'), 'YYYYMMDDHHMMSS');
 
     // for development
     // resolve({
@@ -25,10 +25,6 @@ export default {
     //   tranDateTime,
     //   success: 'true',
     // });
-
-    // TODO: check with Gael why VALUE_DATE value is define statically
-    // with ${new DateUtil().formatDate(new Date('2023-11-15'), 'YYYYMMDD')}
-    // and we don't use new DateUtil().formatDateDefault(null, 'YYYYMMDD')
 
     // for production
     const xmlData = xmlbuilder.create('soapenv:Envelope', {
