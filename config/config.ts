@@ -48,6 +48,6 @@ export const UBA_MAIL_CONFIGS = {
   EMAIL_SENDER: 'app.notification@ubagroup.com',
   OTP_EMAIL_SUBJECT: 'AUTO ALLOCATION OTP',
   OTP_EMAIL_MESSAGE:
-      '<![CDATA[<html><body>Hello!<br/><p>Below your OTP to access the auto allocation platform</p><p><b>:otp</b><br/></p><br/>Warm Regards,</body></html>]]>',
+      'Below your OTP to access the auto allocation platform :otp',
   EMAIL_NOTIFICATION_API_URL: 'http://10.100.5.195:1867/service.asmx',
 };
