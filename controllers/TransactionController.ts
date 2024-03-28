@@ -169,7 +169,6 @@ export default {
 
         // eslint-disable-next-line max-len
         const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(newTransaction);
-        console.log(resultAirtelMoneyService);
         await TransactionAirtelMoney.create(
           {
             mq_txn_id: resultAirtelMoneyService.data.additional_info.mq_txn_id,
