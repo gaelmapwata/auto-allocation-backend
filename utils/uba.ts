@@ -6,7 +6,7 @@ export const UBAUtilities = {
     if (devise === 'CDF') {
       return '015010069067';
     } if (devise === 'USD') {
-      return '010320016038';
+      return '990820000842';
     }
     throw new AppError('Aucune devise fournie', 400);
   },
