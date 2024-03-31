@@ -76,7 +76,7 @@ export default class Transaction extends Model {
   @Column
     checkerId!: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, 'checkerId')
     checker!: User;
 
   @HasOne(() => TransactionAirtelMoney)

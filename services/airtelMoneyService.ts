@@ -60,14 +60,14 @@ const AirtelMoneyService = {
       const headers = {
         'Content-Type': 'application/json',
         'X-Country': 'CD',
-        'X-Currency': 'CDF',
+        'X-Currency': transaction.currency,
         Authorization: `Bearer ${user.data.access_token}`,
       };
 
       const formData = {
         transaction: {
           id: `${transaction.id}00${new Date().getTime()}`,
-          amount: transaction.amount.toString(),
+          amount: parseFloat(transaction.amount.toString()).toString(),
           payee: {
             address_type: 'MOBILE',
             msisdn: transaction.msisdn,
