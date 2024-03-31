@@ -40,6 +40,16 @@ module.exports = {
           key: 'id',
         },
       },
+      checkerId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+      },
+      drAcctNum: {
+        type: Sequelize.STRING,
+      },
       errorFinacle: {
         type: Sequelize.STRING,
       },

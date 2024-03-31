@@ -1,33 +1,5 @@
 import FinacleTransaction from '../models/FinacleTransaction';
-import User from '../models/User';
 import { UBAUtilities } from '../utils/uba';
-import UserService from '../services/UserService';
-import AppError from '../types/CustomError';
-import Permission from '../models/Permission';
-
-async function getDrAccountNUmber(
-  payload:{
-    userId:number,
-    accountNumber: string,
-    accountNumberCDF: string,
-    accountNumberUSD: string,
-    currency: string
-  },
-) : Promise<string> {
-  const userHasPermissionToSetManualAccountToDebit = await UserService
-    .userByIdHasPermission(payload.userId, Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT);
-  if (userHasPermissionToSetManualAccountToDebit) {
-    return payload.accountNumber;
-  }
-
-  if (payload.currency === 'CDF' && !payload.accountNumberCDF) {
-    throw new AppError('L\'utilisateur connecté n\'a pas de compte en CDF configuré', 400);
-  } else if (payload.currency === 'USD' && !payload.accountNumberUSD) {
-    throw new AppError('L\'utilisateur connecté n\'a pas de compte en USD configuré', 400);
-  } else {
-    return payload.currency === 'CDF' ? payload.accountNumberCDF : payload.accountNumberUSD;
-  }
-}
 
 export default {
   // eslint-disable-next-line max-len
@@ -38,23 +10,14 @@ export default {
       libelle: string,
       userId: number,
       transactionId: number,
-      accountNumber: string
+      drAcctNum: string
   },
   ) => {
-    const user = await User.findByPk(payload.userId);
-    const drAcctNum = await getDrAccountNUmber({
-      accountNumber: payload.accountNumber,
-      accountNumberCDF: user?.accountNumberCDF || '',
-      accountNumberUSD: user?.accountNumberUSD || '',
-      currency: payload.currency,
-      userId: payload.userId,
-    });
-
     const transactionFinacle = await FinacleTransaction.create({
       tranAmt: payload.amount,
       tranCrncyCode: payload.currency,
       countryCode: 'COD',
-      drAcctNum,
+      drAcctNum: payload.drAcctNum,
       crAcctNum: UBAUtilities.getAccountToCredited(payload.currency),
       reservedFld1: `Auto Allocation ${payload.libelle}`,
       transactionId: payload.transactionId,

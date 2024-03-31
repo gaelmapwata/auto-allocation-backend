@@ -148,6 +148,11 @@ router.post(
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.CREATE)],
   TransactionController.storeTransaction as any,
 );
+// router.put(
+//   '/transactions/:id/validate',
+//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.CREATE)],
+//   TransactionController.storeTransaction as any,
+// );
 router.get(
   '/transactions/stats',
   [
