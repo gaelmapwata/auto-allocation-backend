@@ -50,6 +50,9 @@ module.exports = {
       drAcctNum: {
         type: Sequelize.STRING,
       },
+      crAcctNum: {
+        type: Sequelize.STRING,
+      },
       errorFinacle: {
         type: Sequelize.STRING,
       },

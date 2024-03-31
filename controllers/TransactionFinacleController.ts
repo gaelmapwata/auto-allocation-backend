@@ -10,7 +10,8 @@ export default {
       libelle: string,
       userId: number,
       transactionId: number,
-      drAcctNum: string
+      drAcctNum: string,
+      crAcctNum: string
   },
   ) => {
     const transactionFinacle = await FinacleTransaction.create({
@@ -18,7 +19,7 @@ export default {
       tranCrncyCode: payload.currency,
       countryCode: 'COD',
       drAcctNum: payload.drAcctNum,
-      crAcctNum: UBAUtilities.getAccountToCredited(payload.currency),
+      crAcctNum: payload.crAcctNum,
       reservedFld1: `Auto Allocation ${payload.libelle}`,
       transactionId: payload.transactionId,
     });

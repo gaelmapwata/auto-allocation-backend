@@ -139,6 +139,17 @@ router.get(
   TransactionController.index,
 );
 router.get(
+  '/transactions/to-validate',
+  [
+    authJwt.verifyToken,
+    authJwt.shouldHaveOneOfPermissions(
+      Permission.TRANSACTION.READ,
+      Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
+    ),
+  ],
+  TransactionController.getTransactionsToValidate,
+);
+router.get(
   '/transactions/download-csv',
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.EXPORT)],
   TransactionController.exportInCSV,
@@ -148,11 +159,11 @@ router.post(
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.CREATE)],
   TransactionController.storeTransaction as any,
 );
-// router.put(
-//   '/transactions/:id/validate',
-//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.CREATE)],
-//   TransactionController.storeTransaction as any,
-// );
+router.put(
+  '/transactions/:id/validate',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.VALIDATE)],
+  TransactionController.validateTransaction,
+);
 router.get(
   '/transactions/stats',
   [

@@ -22,6 +22,9 @@ export default class Transaction extends Model {
     'currency',
     'note',
     'userId',
+    'checkerId',
+    'drAcctNum',
+    'crAcctNum',
     'errorFinacle',
     'errorAirtelMoney',
   ];
@@ -56,12 +59,25 @@ export default class Transaction extends Model {
   @Column
     success!: boolean;
 
+  @Column
+    drAcctNum!: string;
+
+  @Column
+    crAcctNum!: string;
+
   @ForeignKey(() => User)
   @Column
     userId!: number;
 
   @BelongsTo(() => User)
     user!: User;
+
+  @ForeignKey(() => User)
+  @Column
+    checkerId!: number;
+
+  @BelongsTo(() => User)
+    checker!: User;
 
   @HasOne(() => TransactionAirtelMoney)
     transactionAirtelMoney!: TransactionAirtelMoney;
