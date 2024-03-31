@@ -143,12 +143,20 @@ export default {
         raw: true,
         attributes: {
           exclude: ['updatedAt', 'deletedAt'],
-          include: [[
-            Sequelize.literal(`(
-              SELECT email FROM users WHERE users.id = Transaction.userId
-            )`),
-            'user_email',
-          ]],
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT email FROM users WHERE users.id = Transaction.userId
+              )`),
+              'maker_email',
+            ],
+            [
+              Sequelize.literal(`(
+                SELECT email FROM users WHERE users.id = Transaction.checkerId
+              )`),
+              'checker_email',
+            ],
+          ],
         },
       });
 
@@ -206,7 +214,7 @@ export default {
   validateTransaction: async (req: Request, res: Response) => {
     const transaction = await Transaction.findByPk(req.params.id);
     if (!transaction) {
-      return res.status(404).json({ message: 'La transaction n\'a pas été retrouver' });
+      return res.status(404).json({ message: 'La transaction n\'a pas été retrouvéeß' });
     }
 
     try {
