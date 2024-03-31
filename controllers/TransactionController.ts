@@ -79,7 +79,12 @@ export default {
       const whereFilter = await generateFilterAttributes(req);
 
       const TransactionCount = await Transaction.findAndCountAll({
-        include: [TransactionAirtelMoney, FinacleTransaction, User],
+        include: [
+          TransactionAirtelMoney,
+          FinacleTransaction,
+          { model: User, as: 'user' },
+          { model: User, as: 'checker' },
+        ],
         where: whereFilter,
         ...limitQuery,
         offset,
@@ -109,7 +114,7 @@ export default {
       const whereFilter = await generateFilterAttributes(req);
 
       const TransactionCount = await Transaction.findAndCountAll({
-        include: [User],
+        include: [{ model: User, as: 'user' }],
         where: {
           ...whereFilter,
           checkerId: null,
