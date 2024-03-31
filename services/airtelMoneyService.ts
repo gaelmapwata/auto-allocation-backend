@@ -26,12 +26,16 @@ const AirtelMoneyService = {
       });
   }),
 
-  checkKYC: (msisdn:string): Promise<CheckKYCResponseI> => new Promise((resolve, reject) => {
+  checkKYC: (
+    msisdn: string,
+    currency: string,
+  )
+  : Promise<CheckKYCResponseI> => new Promise((resolve, reject) => {
     AirtelMoneyService.login().then((user) => {
       const headers = {
         Accept: '*/*',
         'X-Country': 'CD',
-        'X-Currency': 'CDF',
+        'X-Currency': currency,
         Authorization: `Bearer ${user.data.access_token}`,
       };
 

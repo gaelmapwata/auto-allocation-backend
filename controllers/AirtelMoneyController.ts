@@ -7,7 +7,11 @@ import { Request } from '../types/ExpressOverride';
 const AirtelMoneyController = {
   checkKYCByMsisdn: async (req: Request, res: Response) => {
     try {
-      const msisdnResult = await airtelMoneyService.checkKYC(req.params.msisdn);
+      if (!req.query.currency) {
+        return res.status(422).json({ message: 'la devise n\'a pas été fournis' });
+      }
+      const msisdnResult = await airtelMoneyService
+        .checkKYC(req.params.msisdn, req.query.currency as string);
 
       LogHelper.info(`Airtel Money | user (${req.userId}) requested info for msisdn: ${req.params.msisdn}`);
       return res.status(200).json(msisdnResult.data);
