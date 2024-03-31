@@ -27,7 +27,7 @@ export const UBAUtilities = {
     if (userHasPermissionToSetManualAccountToDebit) {
       return payload.accountNumber;
     }
-  
+
     if (payload.currency === 'CDF' && !payload.accountNumberCDF) {
       throw new AppError('L\'utilisateur connecté n\'a pas de compte en CDF configuré', 400);
     } else if (payload.currency === 'USD' && !payload.accountNumberUSD) {
@@ -35,5 +35,5 @@ export const UBAUtilities = {
     } else {
       return payload.currency === 'CDF' ? payload.accountNumberCDF : payload.accountNumberUSD;
     }
-  }
+  },
 };

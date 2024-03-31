@@ -19,14 +19,32 @@ const ROLES: IRole[] = [
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ,
       Permission.TRANSACTION.EXPORT,
+      Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
     ],
   },
   {
-    name: 'user',
+    name: 'TELLER',
     permissions: [
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
       Permission.TRANSACTION.CREATE,
+    ],
+  },
+  {
+    name: 'DOMOPS',
+    permissions: [
+      Permission.AIRTEL.CHECK_KYC,
+      Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
+      Permission.TRANSACTION.CREATE,
+      Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT,
+    ],
+  },
+  {
+    name: 'CSO',
+    permissions: [
+      Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
+      Permission.TRANSACTION.VALIDATE,
+      Permission.TRANSACTION.READ,
     ],
   },
 ];

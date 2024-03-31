@@ -53,6 +53,8 @@ const RESSOURCES: IRessource[] = [
       { name: 'create', slug: Permission.TRANSACTION.CREATE },
       { name: 'create-with-manual-account', slug: Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT },
       { name: 'export', slug: Permission.TRANSACTION.EXPORT },
+      { name: 'validate', slug: Permission.TRANSACTION.VALIDATE },
+      { name: 'read-transaction-to-validate', slug: Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE },
     ],
   },
 ];
