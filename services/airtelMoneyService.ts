@@ -87,6 +87,7 @@ const AirtelMoneyService = {
           // eslint-disable-next-line max-len
 
           if (data.status.success) {
+            // console.log(data);
             LogHelper.info('Airtel Money | successfully send transaction to airtel api');
             resolve(data);
           } else {
@@ -103,6 +104,7 @@ const AirtelMoneyService = {
           }
         })
         .catch((err: Error) => {
+          console.log(err);
           reject(err);
           LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${err}`);
 

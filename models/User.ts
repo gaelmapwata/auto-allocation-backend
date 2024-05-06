@@ -11,7 +11,7 @@ import UserRole from './UserRole';
   paranoid: true,
 })
 export default class User extends Model {
-  static fillable = ['email', 'accountNumberCDF', 'accountNumberUSD'];
+  static fillable = ['email', 'accountNumberCDF', 'accountNumberUSD', 'validateMaxAmountUSD', 'validateMaxAmountCDF'];
 
   @Column
     email!: string;
@@ -21,6 +21,12 @@ export default class User extends Model {
 
   @Column
     accountNumberUSD!: string;
+
+  @Column
+    validateMaxAmountUSD!: number;
+
+  @Column
+    validateMaxAmountCDF!: number;
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];

@@ -18,6 +18,12 @@ module.exports = {
       accountNumberUSD: {
         type: Sequelize.STRING,
       },
+      validateMaxAmountCDF: {
+        type: Sequelize.DECIMAL(10, 2),
+      },
+      validateMaxAmountUSD: {
+        type: Sequelize.DECIMAL(10, 2),
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -219,7 +219,14 @@ export default {
   validateTransaction: async (req: Request, res: Response) => {
     const transaction = await Transaction.findByPk(req.params.id);
     if (!transaction) {
-      return res.status(404).json({ message: 'La transaction n\'a pas été retrouvéeß' });
+      return res.status(404).json({ message: 'La transaction n\'a pas été retrouvée' });
+    }
+
+    if (transaction.currency === 'USD' && transaction.amount > (req.user as User).validateMaxAmountUSD) {
+      return res.status(503).send({ msg: "Vous n'etes pas authoriser à valider ce montant" });
+    }
+    if (transaction.currency === 'CDF' && transaction.amount > (req.user as User).validateMaxAmountCDF) {
+      return res.status(503).send({ msg: "Vous n'etes pas authoriser à valider ce montant" });
     }
 
     try {
