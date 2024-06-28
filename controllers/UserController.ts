@@ -142,4 +142,41 @@ export default {
       res.status(500).json(error);
     }
   },
+
+  lock: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      await User.update({
+        locked: true,
+      }, {
+        where: {
+          id,
+        },
+      });
+
+      LogHelper.info(`User | user locked by user (${req.userId})`);
+
+      res.status(204).json({});
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+  unlock: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      await User.update({
+        locked: false,
+      }, {
+        where: {
+          id,
+        },
+      });
+
+      LogHelper.info(`User | user unlocked by user (${req.userId})`);
+
+      res.status(204).json({});
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 };

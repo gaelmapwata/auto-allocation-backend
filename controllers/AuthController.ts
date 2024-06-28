@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import add from 'date-fns/add';
@@ -18,6 +19,26 @@ const jwt = require('jsonwebtoken');
 
 const OTP_MINUTES_VALIDITY = 5; // 5 minutes
 const JWT_TIME_VALIDITY = 592000; // 12 hours
+const MAX_LOGIN_ATTEMPT = 3;
+
+async function onLoginFailed(user:User) {
+  // eslint-disable-next-line no-param-reassign
+  user.totalLoginAttempt += 1;
+  await user.save();
+
+  if (user.totalLoginAttempt === MAX_LOGIN_ATTEMPT) {
+    // eslint-disable-next-line no-param-reassign
+    user.locked = true;
+    await user.save();
+  }
+}
+
+async function onLoginSuccess(user:User) {
+  // eslint-disable-next-line no-param-reassign
+  user.totalLoginAttempt = 0;
+  user.locked = false;
+  await user.save();
+}
 
 export default {
   signin: async (req: Request, res: Response) => {
@@ -32,10 +53,16 @@ export default {
         return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
       }
 
+      if (user.locked) {
+        return res.status(401).send({ msg: "Ce compte a été bloqué, veuillez contacter l'administrateur" });
+      }
+
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);
 
       const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
+
       if (!canLogged) {
+        onLoginFailed(user);
         return res.status(401).send({
           msg: 'Email ou Mot de passe invalide',
         });
@@ -73,6 +100,7 @@ export default {
       //   locals: { otp: newOtp.otp },
       //   template: 'login-otp',
       // });
+      onLoginSuccess(user);
       return res.status(200).json({ msg: 'authentification réussie' });
     } catch (error) {
       return errorHandlerService.handleResponseError(res, error as Error);

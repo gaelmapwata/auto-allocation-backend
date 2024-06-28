@@ -19,6 +19,8 @@ const RESSOURCES: IRessource[] = [
       { name: 'update', slug: Permission.USER.UPDATE },
       { name: 'read', slug: Permission.USER.READ },
       { name: 'delete', slug: Permission.USER.DELETE },
+      { name: 'lock', slug: Permission.USER.LOCK },
+      { name: 'unlock', slug: Permission.USER.UNLOCK },
       { name: 'all', slug: Permission.USER.ALL },
     ],
   },

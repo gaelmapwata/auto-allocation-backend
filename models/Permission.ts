@@ -16,6 +16,8 @@ export default class Permission extends Model {
     READ: 'USER:READ',
     DELETE: 'USER:DELETE',
     UPDATE: 'USER:UPDATE',
+    LOCK: 'USER:LOCK',
+    UNLOCK: 'USER:UNLOCK',
     ALL: 'USER:ALL',
   };
 

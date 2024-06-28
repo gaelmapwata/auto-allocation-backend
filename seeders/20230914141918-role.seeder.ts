@@ -14,6 +14,8 @@ const ROLES: IRole[] = [
     name: 'admin',
     permissions: [
       Permission.ROLE.ALL,
+      Permission.USER.LOCK,
+      Permission.USER.UNLOCK,
       Permission.USER.ALL,
       Permission.RESSOURCE.ALL,
       Permission.AIRTEL.CHECK_KYC,

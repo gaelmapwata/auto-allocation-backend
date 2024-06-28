@@ -59,6 +59,18 @@ router.delete(
   UserController.delete,
 );
 
+router.put(
+  '/users/:id/lock',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.USER.LOCK)],
+  UserController.lock as any,
+);
+
+router.put(
+  '/users/:id/unlock',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.USER.UNLOCK)],
+  UserController.unlock as any,
+);
+
 // ----------
 
 /**
