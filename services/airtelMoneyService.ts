@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AppError from '../types/CustomError';
-import generateNumeric from '../utils/utilities';
+// import generateNumeric from '../utils/utilities';
 import ActionCodeAutoAllocation from '../utils/actionCodeAutoAllocation';
 import { AirtelLoginResponseI, AutoAllocationResponseI, CheckKYCResponseI } from '../types/AirtelMoney';
 import Transaction from '../models/Transaction';
@@ -17,10 +17,12 @@ const AirtelMoneyService = {
     };
     axios.post(`${process.env.AUTH_AIRTEL_URL}`, userData)
       .then((response) => {
+        // console.log('response airtel', response);
         LogHelper.info('Airtel Money | successfully login to the api');
         resolve(response);
       })
       .catch((error) => {
+        // console.log('error airtel', error);
         LogHelper.info('Airtel Money | unsuccessfully login to the api');
         reject(error);
       });
