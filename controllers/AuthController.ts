@@ -1,12 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
-import add from 'date-fns/add';
 import activeDirectoryService from '../services/activeDirectoryService';
 
 import User from '../models/User';
 import Otp from '../models/Otp';
-import generateNumeric from '../utils/utilities';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
 // import { sendMailFromEmailTemplates } from '../utils/mail';
@@ -14,10 +12,10 @@ import utilHelper from '../utils/utilHelper';
 import errorHandlerService from '../services/ErrorHandlerService';
 import LogHelper from '../utils/logHelper';
 import { UBA_MAIL_CONFIGS } from '../config/config';
+import OtpService from '../services/OtpService';
 
 const jwt = require('jsonwebtoken');
 
-const OTP_MINUTES_VALIDITY = 5; // 5 minutes
 const JWT_TIME_VALIDITY = 592000; // 12 hours
 const MAX_LOGIN_ATTEMPT = 3;
 
@@ -79,19 +77,17 @@ export default {
       });
 
       // create new OTP
-      const newOtp = await Otp.create({
-        email: req.body.email,
-        otp: generateNumeric.generateNumericOTP(),
-        expirationDate: add(new Date(), { minutes: OTP_MINUTES_VALIDITY }).toISOString().split('.')[0],
-      });
+      const { otp: userOTP } = await OtpService.createOtpForUser(req.body.email);
 
       utilHelper.sendEmailNotification(
-        newOtp.email.trim(),
-        newOtp.email.trim(),
+        req.body.email,
+        req.body.email,
         UBA_MAIL_CONFIGS.EMAIL_SENDER.trim(),
         UBA_MAIL_CONFIGS.OTP_EMAIL_SUBJECT,
-        UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, newOtp.otp),
+        UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, userOTP),
       );
+
+      // console.log(userOTP);
 
       LogHelper.info(`Auth | user ${req.body.email} successful logged with active directory, otp sended`);
 
@@ -117,21 +113,15 @@ export default {
       if (!user) {
         return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
       }
-      const otp = await Otp.findOne({
-        where: {
-          email: req.body.email,
-          otp: req.body.otp,
-          expirationDate: {
-            [Op.gte]: new Date(),
-          },
-        },
-      });
+
+      const otp = await OtpService.checkOtpFromUser(req.body.email, req.body.otp);
 
       if (!otp) {
         return res.status(401).send({ msg: 'Otp non reconnue ou expiré' });
       }
+
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: JWT_TIME_VALIDITY, // 12 hours
+        expiresIn: JWT_TIME_VALIDITY,
       });
 
       otp.destroy();
