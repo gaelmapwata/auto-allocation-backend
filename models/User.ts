@@ -17,8 +17,6 @@ export default class User extends Model {
     'accountNumberUSD',
     'validateMaxAmountUSD',
     'validateMaxAmountCDF',
-    'totalLoginAttempt',
-    'locked',
   ];
 
   @Column

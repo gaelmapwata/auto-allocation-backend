@@ -36,7 +36,6 @@ async function onLoginFailed(user:User) {
 async function onLoginSuccess(user:User) {
   // eslint-disable-next-line no-param-reassign
   user.totalLoginAttempt = 0;
-  user.locked = false;
   await user.save();
 }
 
@@ -60,11 +59,12 @@ export default {
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);
 
       const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
+      // const canLogged = true;
 
       if (!canLogged) {
-        onLoginFailed(user);
+        await onLoginFailed(user);
         return res.status(401).send({
-          msg: 'Email ou Mot de passe invalide',
+          msg: `Email ou Mot de passe invalide. Tentatives restantes (${MAX_LOGIN_ATTEMPT - user.totalLoginAttempt})`,
         });
       }
 

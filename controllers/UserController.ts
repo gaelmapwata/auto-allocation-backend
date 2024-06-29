@@ -154,7 +154,7 @@ export default {
         },
       });
 
-      LogHelper.info(`User | user locked by user (${req.userId})`);
+      LogHelper.info(`User | user (${id}) locked by user (${req.userId})`);
 
       res.status(204).json({});
     } catch (error) {
@@ -172,7 +172,7 @@ export default {
         },
       });
 
-      LogHelper.info(`User | user unlocked by user (${req.userId})`);
+      LogHelper.info(`User | user (${id}) unlocked by user (${req.userId})`);
 
       res.status(204).json({});
     } catch (error) {
