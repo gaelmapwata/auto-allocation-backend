@@ -6,30 +6,30 @@ const transactionValidators = {
   storeTransactionSchema: {
     msisdn: {
       notEmpty: {
-        errorMessage: 'Le champ "msisdn" est obligatoire',
+        errorMessage: 'The "msisdn" field is mandatory',
       },
     },
     lastName: {
       notEmpty: {
-        errorMessage: 'Le champ "lastName" est obligatoire',
+        errorMessage: 'The "lastName" field is mandatory',
       },
     },
     firstName: {
       notEmpty: {
-        errorMessage: 'Le champ "firstName" est obligatoire',
+        errorMessage: 'The "firstName" field is mandatory',
       },
     },
     currency: {
       notEmpty: {
-        errorMessage: 'Le champ "currency" est obligatoire',
+        errorMessage: 'The "currency" field is mandatory',
       },
     },
     amount: {
       notEmpty: {
-        errorMessage: 'Le champ "amount" est obligatoire',
+        errorMessage: 'The "amount" field is mandatory',
       },
       isFloat: {
-        errorMessage: 'Le champ "amount" doit-être une decimal valide',
+        errorMessage: 'The "amount" field must be a valid decimal.',
       },
     },
     accountNumber: {
@@ -42,7 +42,7 @@ const transactionValidators = {
             );
 
           if (userHasPermissionToSetManualAccountToDebit && !value) {
-            throw new Error('Le champ "accountNumber" est obligatoire');
+            throw new Error('The "accountNumber" field is mandatory');
           }
         },
       },

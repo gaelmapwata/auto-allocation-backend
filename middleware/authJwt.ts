@@ -22,14 +22,14 @@ export default {
 
     if (!token) {
       return res.status(403).json({
-        message: 'Pas de Token fournis !',
+        message: 'No tokens provided!',
       });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err: null, decoded: any) => {
       if (err) {
         return res.status(401).json({
-          message: 'Veuillez vous connectez !',
+          message: 'Please log in!',
         });
       }
 
@@ -41,7 +41,7 @@ export default {
             req.user = user;
           } else {
             res.status(401).json({
-              message: 'Veuillez vous connectez !',
+              message: 'Please log in!',
             });
           }
           next();
@@ -55,6 +55,6 @@ export default {
     if (passed) {
       return next();
     }
-    return res.status(403).json({ message: "Vous n'avez pas les accès nécessaires" });
+    return res.status(403).json({ message: "You don't have the necessary access" });
   },
 };

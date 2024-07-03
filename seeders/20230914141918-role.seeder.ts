@@ -15,6 +15,8 @@ const ROLES: IRole[] = [
     permissions: [
       Permission.ROLE.ALL,
       Permission.USER.ALL,
+      Permission.USER.LOCK,
+      Permission.USER.UNLOCK,
       Permission.RESSOURCE.ALL,
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ,

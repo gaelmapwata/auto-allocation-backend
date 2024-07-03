@@ -83,7 +83,7 @@ export default {
         }
         const role = await Role.findByPk(req.params.id);
         if (!role) {
-          return res.status(404).json({ msg: 'Le role n\'a pas été retrouvé' });
+          return res.status(404).json({ msg: 'The role has not been found' });
         }
 
         await role.$add('permissions', req.body.permissions);
@@ -105,7 +105,7 @@ export default {
         }
         const role = await Role.findByPk(req.params.id);
         if (!role) {
-          return res.status(404).json({ msg: 'Le role n\'a pas été retrouvé' });
+          return res.status(404).json({ msg: 'The role has not been found' });
         }
 
         await role.$set('permissions', req.body.permissions);

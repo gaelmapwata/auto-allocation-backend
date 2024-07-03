@@ -4,19 +4,19 @@ const userValidators = {
   storeSchema: {
     email: {
       isEmail: {
-        errorMessage: 'Le champ "Email" est invalide',
+        errorMessage: 'The "Email" field is invalid',
       },
       notEmpty: {
-        errorMessage: 'Le champ "Email" est obligatoire',
+        errorMessage: 'The "Email" field is mandatory',
       },
       custom: {
         options: async (value: string) => {
           const user = await User.findOne({ where: { email: value }, paranoid: false });
           if (user && !user.deletedAt) {
-            throw new Error('Un utilisateur ayant cet email existe déjà');
+            throw new Error('A user with this email address already exists');
           }
           if (user) {
-            throw new Error('Cet email a déjà été utilisé par un utilisateur supprimé');
+            throw new Error('This email has already been used by a deleted user');
           }
         },
       },
@@ -24,7 +24,7 @@ const userValidators = {
     roles: {
       optional: true,
       isArray: {
-        errorMessage: 'Le champ "roles" doit être un tableau',
+        errorMessage: 'The "roles" field must be an array',
       },
     },
     'roles.*': {
@@ -35,7 +35,7 @@ const userValidators = {
   addRolesSchema: {
     roles: {
       isArray: {
-        errorMessage: 'Le champ "roles" doit être un tableau',
+        errorMessage: 'The "roles" field must be an array',
       },
     },
     'roles.*': {
@@ -46,10 +46,10 @@ const userValidators = {
   updateSchema: {
     email: {
       isEmail: {
-        errorMessage: 'Le champ "Email" est invalide',
+        errorMessage: 'The "Email" field is invalid',
       },
       notEmpty: {
-        errorMessage: 'Le champ "Email" est obligatoire',
+        errorMessage: 'The "Email" field is mandatory',
       },
       custom: {
         options: async (value: string, { req }: { req: any }) => {
@@ -58,10 +58,10 @@ const userValidators = {
           if (user && user.email !== value) {
             const existUser = await User.findOne({ where: { email: value }, paranoid: false });
             if (existUser && !existUser.deletedAt) {
-              throw new Error('Un utilisateur ayant cet email existe déjà');
+              throw new Error('A user with this email address already exists');
             }
             if (existUser) {
-              throw new Error('Cet email a déjà été utilisé par un utilisateur supprimé');
+              throw new Error('This email has already been used by a deleted user');
             }
           }
         },
@@ -70,7 +70,7 @@ const userValidators = {
     roles: {
       optional: true,
       isArray: {
-        errorMessage: 'Le champ "roles" doit être un tableau',
+        errorMessage: 'The "roles" field must be an array',
       },
     },
     'roles.*': {

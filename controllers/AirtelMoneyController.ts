@@ -8,7 +8,7 @@ const AirtelMoneyController = {
   checkKYCByMsisdn: async (req: Request, res: Response) => {
     try {
       if (!req.query.currency) {
-        return res.status(422).json({ message: 'la devise n\'a pas été fournis' });
+        return res.status(422).json({ message: 'the currency was not supplied' });
       }
       const msisdnResult = await airtelMoneyService
         .checkKYC(req.params.msisdn, req.query.currency as string);

@@ -81,7 +81,7 @@ export default {
         }
         const user = await User.findByPk(req.params.id);
         if (!user) {
-          return res.status(404).json({ msg: 'L\'utilisateur n\'a pas été retrouver' });
+          return res.status(404).json({ msg: 'The user has not been found' });
         }
 
         const { roles } = (req.body as any);

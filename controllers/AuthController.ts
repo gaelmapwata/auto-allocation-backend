@@ -47,11 +47,11 @@ export default {
       });
 
       if (!user) {
-        return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
+        return res.status(401).send({ msg: 'This account has not been found' });
       }
 
       if (user.locked) {
-        return res.status(401).send({ msg: "Ce compte a été bloqué, veuillez contacter l'administrateur" });
+        return res.status(401).send({ msg: 'This account has been blocked, please contact the administrator' });
       }
 
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);
@@ -62,7 +62,7 @@ export default {
       if (!canLogged) {
         await onLoginFailed(user);
         return res.status(401).send({
-          msg: `Email ou Mot de passe invalide. Tentatives restantes (${MAX_LOGIN_ATTEMPT - user.totalLoginAttempt})`,
+          msg: `Invalid Email or Password. Remaining attempts (${MAX_LOGIN_ATTEMPT - user.totalLoginAttempt})`,
         });
       }
 
@@ -97,7 +97,7 @@ export default {
       //   template: 'login-otp',
       // });
       onLoginSuccess(user);
-      return res.status(200).json({ msg: 'authentification réussie' });
+      return res.status(200).json({ msg: 'successful authentication' });
     } catch (error) {
       return errorHandlerService.handleResponseError(res, error as Error);
     }
@@ -111,13 +111,13 @@ export default {
       });
 
       if (!user) {
-        return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
+        return res.status(401).send({ msg: 'This account has not been found' });
       }
 
       const otp = await OtpService.checkOtpFromUser(req.body.email, req.body.otp);
 
       if (!otp) {
-        return res.status(401).send({ msg: 'Otp non reconnue ou expiré' });
+        return res.status(401).send({ msg: 'Otp not recognized or expired' });
       }
 
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -141,7 +141,7 @@ export default {
         include: [{ model: Role, include: [Permission] }],
       });
       if (!user) {
-        return res.status(401).send({ msg: "Ce compte n'a pas été retrouvé" });
+        return res.status(401).send({ msg: 'This account has not been found' });
       }
 
       return res.status(200).json(user);

@@ -2,15 +2,15 @@ const authValidators = {
   signinSchema: {
     email: {
       isEmail: {
-        errorMessage: 'Le champ "email" est invalide',
+        errorMessage: 'The "email" field is invalid',
       },
       notEmpty: {
-        errorMessage: 'Le champ "email" est obligatoire',
+        errorMessage: 'The "email" field is mandatory',
       },
     },
     password: {
       notEmpty: {
-        errorMessage: 'Le champ "password" est obligatoire',
+        errorMessage: 'The "password" field is mandatory',
       },
     },
   },

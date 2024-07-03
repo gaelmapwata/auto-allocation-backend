@@ -13,7 +13,7 @@ export default {
       .catch((error) => {
         console.log(error);
         reject(
-          new AppError('Impossible de contacter le service Active Directory', 500),
+          new AppError('Unable to contact Active Directory service', 500),
         );
       });
   }),
