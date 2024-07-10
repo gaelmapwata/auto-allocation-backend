@@ -223,10 +223,10 @@ export default {
     }
 
     if (transaction.currency === 'USD' && transaction.amount > (req.user as User).validateMaxAmountUSD) {
-      return res.status(503).send({ msg: 'You are not authorized to validate this amount' });
+      return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountUSD} USD` });
     }
     if (transaction.currency === 'CDF' && transaction.amount > (req.user as User).validateMaxAmountCDF) {
-      return res.status(503).send({ msg: 'You are not authorized to validate this amount' });
+      return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountCDF} CDF` });
     }
 
     try {

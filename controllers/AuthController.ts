@@ -47,7 +47,7 @@ export default {
       });
 
       if (!user) {
-        return res.status(401).send({ msg: 'This account has not been found' });
+        return res.status(401).send({ msg: 'This account has not been found, please contact the administrator' });
       }
 
       if (user.locked) {
