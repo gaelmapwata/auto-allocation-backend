@@ -1,10 +1,12 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import http from 'http';
+import https from 'https'; // Utilisez https à la place de http
 import expressFormData from 'express-form-data';
 import os from 'os';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs'; // Importez fs pour lire les fichiers
+
 import router from './router';
 import sequelize from './sequelize-instance';
 import LogHelper from './utils/logHelper';
@@ -15,7 +17,6 @@ import LogHelper from './utils/logHelper';
 
 dotenv.config();
 const app: Express = express();
-const server = http.createServer(app);
 
 /**
  * Middleware
@@ -51,25 +52,32 @@ app.use(expressFormData.parse(options));
 app.use('/api', router);
 
 /**
-* Init Sequelize
-*/
+ * Init Sequelize
+ */
 sequelize.authenticate()
   .then(() => {
-    // eslint-disable-next-line no-console
     console.log('Connection has been established successfully.');
   })
   .catch((error: Error) => {
-    // eslint-disable-next-line no-console
     console.error('Unable to connect to the database:', error);
   });
 
 /**
- * Run server
+ * Run server with HTTPS
  */
 
-const port = process.env.NODE_SERVER_PORT;
+const port = process.env.NODE_SERVER_PORT || 3000;
+const privateKeyPath = path.join(__dirname, '10.80.6.136-key.pem'); // Chemin vers votre clé privée
+const certificatePath = path.join(__dirname, '10.80.6.136.pem'); // Chemin vers votre certificat SSL
+
+const httpsOptions = {
+  key: fs.readFileSync(privateKeyPath),
+  cert: fs.readFileSync(certificatePath),
+};
+
+const server = https.createServer(httpsOptions, app);
+
 server.listen(port, () => {
-  // eslint-disable-next-line no-console
   console.log(`app listening on port ${port}`);
   LogHelper.info(`Server started on port ${port}`);
 });
