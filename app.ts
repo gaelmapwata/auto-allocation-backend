@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import https from 'https'; // Utilisez https à la place de http
+import http from 'http';
+import https from 'https';
 import expressFormData from 'express-form-data';
 import os from 'os';
 import cors from 'cors';
@@ -66,18 +67,26 @@ sequelize.authenticate()
  * Run server with HTTPS
  */
 
+const key = fs.readFileSync(path.resolve(__dirname, process.env.CERTIFICAT_PRIVATE_KEY_PATH || ''));
+const cert = fs.readFileSync(path.resolve(__dirname, process.env.CERTIFICAT_PATH || ''));
+const ca = [
+  fs.readFileSync(path.resolve(__dirname, process.env.ROOT_CERTIFICAT_PATH || '')),
+  fs.readFileSync(path.resolve(__dirname, process.env.INTERMEDIATE_CERTIFICAT_PATH || '')),
+];
+const httpsOptions = { key, cert, ca };
+
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(httpsOptions, app);
+
 const port = process.env.NODE_SERVER_PORT || 3000;
-const privateKeyPath = path.join(__dirname, '10.80.6.136-key.pem'); // Chemin vers votre clé privée
-const certificatePath = path.join(__dirname, '10.80.6.136.pem'); // Chemin vers votre certificat SSL
+const portSecure = process.env.NODE_SERVER_PORT_SECURE || 3006;
 
-const httpsOptions = {
-  key: fs.readFileSync(privateKeyPath),
-  cert: fs.readFileSync(certificatePath),
-};
+httpServer.listen(port, () => {
+  console.log(`Http Server Running port ${port}`);
+  LogHelper.info(`Http Server Running port ${port}`);
+});
 
-const server = https.createServer(httpsOptions, app);
-
-server.listen(port, () => {
-  console.log(`app listening on port ${port}`);
-  LogHelper.info(`Server started on port ${port}`);
+httpsServer.listen(portSecure, () => {
+  console.log(`Https Server Running port ${portSecure}`);
+  LogHelper.info(`Https Server Running port ${portSecure}`);
 });
