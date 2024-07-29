@@ -4,12 +4,13 @@ import { Request } from '../types/ExpressOverride';
 import UserService from '../services/UserService';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
+import BlacklistToken from '../models/BlacklistToken';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
 
 export default {
-  verifyToken: (req: Request, res: Response, next: NextFunction) => {
+  verifyToken: async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     const bearer = authHeader && authHeader.split(' ')[0];
@@ -23,6 +24,18 @@ export default {
     if (!token) {
       return res.status(403).json({
         message: 'No tokens provided!',
+      });
+    }
+
+    const blacklistToken = await BlacklistToken.findOne({
+      where: {
+        token,
+      },
+    });
+
+    if (blacklistToken) {
+      return res.status(409).json({
+        message: 'This token has already expired!',
       });
     }
 

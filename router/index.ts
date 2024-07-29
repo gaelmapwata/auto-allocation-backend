@@ -5,6 +5,7 @@ import express, { Request, Response } from 'express';
 import UserController from '../controllers/UserController';
 import AuthController from '../controllers/AuthController';
 import authJwt from '../middleware/authJwt';
+import rateLimiting from '../middleware/rateLimiting';
 // import Permission from '../models/Permission';
 import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
@@ -23,7 +24,7 @@ router.get('/', (_: Request, res: Response) => {
  */
 
 router.post('/auth/signin', AuthController.signin as any);
-router.post('/auth/check-otp', AuthController.checkOtp);
+router.post('/auth/check-otp', rateLimiting.rateLimitMiddleware, AuthController.checkOtp);
 router.get('/auth/user', [authJwt.verifyToken], AuthController.getCurrentUser);
 router.post('/auth/logout', AuthController.logout);
 

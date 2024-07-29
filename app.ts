@@ -18,6 +18,7 @@ import LogHelper from './utils/logHelper';
 
 dotenv.config();
 const app: Express = express();
+const cspPolicy = "default-src 'self'; img-src 'self' data:; script-src 'self' https://apis.example.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;";
 
 /**
  * Middleware
@@ -34,6 +35,9 @@ app.use((_, res, next) => {
     'Access-Control-Allow-Headers',
     'x-access-token, Origin, Content-Type, Accept',
   );
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Content-Security-Policy', cspPolicy);
+  res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   next();
 });
 

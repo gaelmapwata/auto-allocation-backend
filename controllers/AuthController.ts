@@ -6,6 +6,7 @@ import activeDirectoryService from '../services/activeDirectoryService';
 import User from '../models/User';
 import Otp from '../models/Otp';
 import Role from '../models/Role';
+import BlacklistToken from '../models/BlacklistToken';
 import Permission from '../models/Permission';
 // import { sendMailFromEmailTemplates } from '../utils/mail';
 import utilHelper from '../utils/utilHelper';
@@ -16,7 +17,7 @@ import OtpService from '../services/OtpService';
 
 const jwt = require('jsonwebtoken');
 
-const JWT_TIME_VALIDITY = 592000; // 12 hours
+const JWT_TIME_VALIDITY = 300000; // 5min
 const MAX_LOGIN_ATTEMPT = 3;
 
 async function onLoginFailed(user:User) {
@@ -149,5 +150,18 @@ export default {
       return res.status(500).json(error);
     }
   },
-  logout: (_: unknown, res: Response) => res.status(200).json({}),
+  logout: async (req: Request, res: Response) => {
+    try {
+      const authHeader = req.headers.authorization;
+      const bearer = authHeader && authHeader.split(' ')[0];
+      if (bearer !== 'Bearer') {
+        return res.sendStatus(401);
+      }
+      const token = authHeader && authHeader.split(' ')[1];
+      const blacklistToken = await BlacklistToken.create({ token });
+      res.status(201).json(blacklistToken);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
 };
