@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { format } from 'date-fns';
+import { Request } from '../types/ExpressOverride';
 
 export default class LogHelper {
   static info(message: string) {
@@ -11,3 +12,5 @@ export default class LogHelper {
     logFileWriteStream.close();
   }
 }
+
+export const userLogIdentifier = (req: Request) => `${req.user?.email} #${req.userId}`;

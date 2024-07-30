@@ -3,7 +3,7 @@ import { checkSchema, validationResult } from 'express-validator';
 import User from '../models/User';
 import userValidators from '../validators/userValidators';
 import Role from '../models/Role';
-import LogHelper from '../utils/logHelper';
+import LogHelper, { userLogIdentifier } from '../utils/logHelper';
 import { Request } from '../types/ExpressOverride';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -49,12 +49,12 @@ export default {
         }
         const user = await User.create(req.body);
 
-        const { roles } = (req.body as any);
-        if (roles) {
-          await user.$add('roles', roles);
+        const { roleId } = (req.body as any);
+        if (roleId) {
+          await user.$add('roles', roleId as number);
         }
 
-        LogHelper.info(`User | new user (${req.body.email}) created by user (${req.userId})`);
+        LogHelper.info(`User | new user (${req.body.email}) created by user (${userLogIdentifier(req)})`);
 
         res.status(201).json(user);
       } catch (error) {
@@ -71,30 +71,6 @@ export default {
       res.status(500).json(error);
     }
   },
-  addRoles: [
-    checkSchema(userValidators.addRolesSchema),
-    async (req: Request, res: Response) => {
-      try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ msg: errors.array() });
-        }
-        const user = await User.findByPk(req.params.id);
-        if (!user) {
-          return res.status(404).json({ msg: 'The user has not been found' });
-        }
-
-        const { roles } = (req.body as any);
-        await user.$add('roles', roles);
-
-        LogHelper.info(`User | new roles given to user (${user.email}) by user (${req.userId})`);
-
-        res.status(201).json(user);
-      } catch (error) {
-        res.status(500).json(error);
-      }
-    },
-  ],
 
   update: [
     checkSchema(userValidators.updateSchema),
@@ -115,13 +91,24 @@ export default {
           },
         );
 
-        const newUser = await User.findByPk(id);
-        const { roles } = (req.body as any);
-        if (roles && newUser) {
-          await newUser.$set('roles', roles);
+        const newUser = await User.findByPk(id, { include: [Role] });
+
+        const { roleId } = (req.body as any);
+        if (roleId && newUser) {
+          if (!newUser.roles.length || newUser.roles[0].id !== roleId) {
+            const newRole = await Role.findByPk(roleId);
+            const previousRole = newUser.roles.length
+              ? newUser.roles[0].name
+              : 'No role';
+
+            LogHelper.info(`User | user (${newUser?.email}) role changed`
+              + ` from ${previousRole} to ${newRole?.name} by user (${userLogIdentifier(req)})`);
+          }
+
+          await newUser.$set('roles', roleId as number);
         }
 
-        LogHelper.info(`User | user (${newUser?.email}) updated by user (${req.userId})`);
+        LogHelper.info(`User | user (${newUser?.email}) updated by user (${userLogIdentifier(req)})`);
         res.status(200).json(newUser);
       } catch (error) {
         res.status(500).json(error);
@@ -135,7 +122,7 @@ export default {
       const user = await User.findByPk(id);
       user?.destroy();
 
-      LogHelper.info(`User | user (${user?.email}) deleted by user (${req.userId})`);
+      LogHelper.info(`User | user (${user?.email}) deleted by user (${userLogIdentifier(req)})`);
 
       res.status(204).json({});
     } catch (error) {
@@ -154,7 +141,7 @@ export default {
         },
       });
 
-      LogHelper.info(`User | user (${id}) locked by user (${req.userId})`);
+      LogHelper.info(`User | user (${id}) locked by user (${userLogIdentifier(req)})`);
 
       res.status(204).json({});
     } catch (error) {
@@ -172,7 +159,7 @@ export default {
         },
       });
 
-      LogHelper.info(`User | user (${id}) unlocked by user (${req.userId})`);
+      LogHelper.info(`User | user (${id}) unlocked by user (${userLogIdentifier(req)})`);
 
       res.status(204).json({});
     } catch (error) {

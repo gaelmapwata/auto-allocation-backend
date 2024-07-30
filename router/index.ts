@@ -87,31 +87,31 @@ router.get(
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.READ)],
   RoleController.index,
 );
-router.post(
-  '/roles',
-  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.CREATE)],
-  RoleController.store as any,
-);
-router.post(
-  '/roles/:id/add-permissions',
-  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.ADD_PERMISSIONS)],
-  RoleController.addPermissions as any,
-);
-router.post(
-  '/roles/:id/update-permissions',
-  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.UPDATE_PERMISSIONS)],
-  RoleController.updatePermissions as any,
-);
+// router.post(
+//   '/roles',
+//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.CREATE)],
+//   RoleController.store as any,
+// );
+// router.post(
+//   '/roles/:id/add-permissions',
+//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.ADD_PERMISSIONS)],
+//   RoleController.addPermissions as any,
+// );
+// router.post(
+//   '/roles/:id/update-permissions',
+//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.UPDATE_PERMISSIONS)],
+//   RoleController.updatePermissions as any,
+// );
 router.get(
   '/roles/:id',
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.READ)],
   RoleController.show,
 );
-router.put(
-  '/roles/:id',
-  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.UPDATE)],
-  RoleController.update as any,
-);
+// router.put(
+//   '/roles/:id',
+//   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.UPDATE)],
+//   RoleController.update as any,
+// );
 router.delete(
   '/roles/:id',
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.ROLE.DELETE)],

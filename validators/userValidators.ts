@@ -21,25 +21,9 @@ const userValidators = {
         },
       },
     },
-    roles: {
+    roleId: {
+      isInt: true,
       optional: true,
-      isArray: {
-        errorMessage: 'The "roles" field must be an array',
-      },
-    },
-    'roles.*': {
-      isInt: true,
-    },
-  },
-
-  addRolesSchema: {
-    roles: {
-      isArray: {
-        errorMessage: 'The "roles" field must be an array',
-      },
-    },
-    'roles.*': {
-      isInt: true,
     },
   },
 
@@ -67,14 +51,9 @@ const userValidators = {
         },
       },
     },
-    roles: {
-      optional: true,
-      isArray: {
-        errorMessage: 'The "roles" field must be an array',
-      },
-    },
-    'roles.*': {
+    roleId: {
       isInt: true,
+      optional: true,
     },
   },
 };
