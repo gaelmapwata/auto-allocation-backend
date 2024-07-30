@@ -24,9 +24,13 @@ router.get('/', (_: Request, res: Response) => {
  */
 
 router.post('/auth/signin', AuthController.signin as any);
-router.post('/auth/check-otp', rateLimiting.rateLimitMiddleware, AuthController.checkOtp);
+router.post(
+  '/auth/check-otp',
+  [authJwt.verifyPasswordToken, rateLimiting.rateLimitMiddleware],
+  AuthController.checkOtp,
+);
 router.get('/auth/user', [authJwt.verifyToken], AuthController.getCurrentUser);
-router.post('/auth/logout', AuthController.logout);
+router.post('/auth/logout', [authJwt.verifyToken], AuthController.logout);
 
 // ----------
 

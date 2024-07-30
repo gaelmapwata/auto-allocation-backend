@@ -1,6 +1,7 @@
 import {
   Table, Column, Model,
 } from 'sequelize-typescript';
+import { TokenTypeE } from '../types/Token';
 
 @Table({
   tableName: 'blacklist_tokens',
@@ -8,10 +9,10 @@ import {
   paranoid: true,
 })
 
-export default class Otp extends Model {
-  // Propriétés fillable
-  static fillable: string[] = ['token'];
-
+export default class BlacklistToken extends Model {
   @Column
     token!: string;
+
+  @Column
+    type!: TokenTypeE;
 }

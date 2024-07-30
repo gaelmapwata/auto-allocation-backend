@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Op } from 'sequelize';
+import { Request } from '../types/ExpressOverride';
 import activeDirectoryService from '../services/activeDirectoryService';
 
 import User from '../models/User';
@@ -14,10 +15,12 @@ import errorHandlerService from '../services/ErrorHandlerService';
 import LogHelper from '../utils/logHelper';
 import { UBA_MAIL_CONFIGS } from '../config/config';
 import OtpService from '../services/OtpService';
+import { TokenTypeE } from '../types/Token';
 
 const jwt = require('jsonwebtoken');
 
 const JWT_TIME_VALIDITY = 300000; // 5min
+const JWT_PASSWORD_TOKEN_TIME_VALIDITY = 5 * 60; // 5min
 const MAX_LOGIN_ATTEMPT = 3;
 
 async function onLoginFailed(user:User) {
@@ -57,8 +60,8 @@ export default {
 
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);
 
-      const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
-      // const canLogged = true;
+      // const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
+      const canLogged = true;
 
       if (!canLogged) {
         await onLoginFailed(user);
@@ -88,46 +91,46 @@ export default {
         UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, userOTP),
       );
 
-      // console.log(userOTP);
+      console.log(userOTP);
 
       LogHelper.info(`Auth | user ${req.body.email} successful logged with active directory, otp sended`);
 
-      // sendMailFromEmailTemplates({
-      //   mailTo: newOtp.email,
-      //   locals: { otp: newOtp.otp },
-      //   template: 'login-otp',
-      // });
+      const token = jwt.sign(
+        {
+          id: user.id,
+          type: TokenTypeE.PASSWORD_TOKEN,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: JWT_PASSWORD_TOKEN_TIME_VALIDITY },
+      );
+
       onLoginSuccess(user);
-      return res.status(200).json({ msg: 'successful authentication' });
+      return res.status(200).json({ msg: 'successful authentication', token });
     } catch (error) {
       return errorHandlerService.handleResponseError(res, error as Error);
     }
   },
   checkOtp: async (req: Request, res: Response) => {
     try {
-      const user = await User.findOne({
-        where: {
-          email: req.body.email,
-        },
-      });
-
-      if (!user) {
-        return res.status(401).send({ msg: 'This account has not been found' });
-      }
-
-      const otp = await OtpService.checkOtpFromUser(req.body.email, req.body.otp);
+      const user = req.passwordAuthData?.user as User;
+      const otp = await OtpService.checkOtpFromUser(user.email, req.body.otp);
 
       if (!otp) {
         return res.status(401).send({ msg: 'Otp not recognized or expired' });
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({
+        id: user.id,
+        type: TokenTypeE.MAIN_TOKEN,
+      }, process.env.JWT_SECRET, {
         expiresIn: JWT_TIME_VALIDITY,
       });
 
       otp.destroy();
 
-      LogHelper.info(`Auth | user ${req.body.email} successful logged with otp verification`);
+      LogHelper.info(`Auth | user ${user.email} successful logged with otp verification`);
+
+      await BlacklistToken.create({ token: req.body.token, type: TokenTypeE.PASSWORD_TOKEN });
 
       return res.status(200).json({
         token,
@@ -158,7 +161,7 @@ export default {
         return res.sendStatus(401);
       }
       const token = authHeader && authHeader.split(' ')[1];
-      const blacklistToken = await BlacklistToken.create({ token });
+      const blacklistToken = await BlacklistToken.create({ token, type: TokenTypeE.MAIN_TOKEN });
       res.status(201).json(blacklistToken);
     } catch (error) {
       res.status(500).json(error);

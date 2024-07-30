@@ -4,4 +4,8 @@ import User from '../models/User';
 export type Request = ExpressRequest & {
   userId?: number | null,
   user?: User | null,
+  passwordAuthData?: {
+    userId?: number | null,
+    user?: User | null,
+  }
 }

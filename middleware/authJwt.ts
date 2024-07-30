@@ -5,6 +5,7 @@ import UserService from '../services/UserService';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
 import BlacklistToken from '../models/BlacklistToken';
+import { TokenDecodedI, TokenTypeE } from '../types/Token';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
@@ -23,26 +24,33 @@ export default {
 
     if (!token) {
       return res.status(403).json({
-        message: 'No tokens provided!',
+        msg: 'No token provided!',
       });
     }
 
     const blacklistToken = await BlacklistToken.findOne({
       where: {
         token,
+        type: TokenTypeE.MAIN_TOKEN,
       },
     });
 
     if (blacklistToken) {
       return res.status(409).json({
-        message: 'This token has already expired!',
+        message: 'Session expired please re-authenticate',
       });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err: null, decoded: any) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err: null, decoded: TokenDecodedI) => {
       if (err) {
         return res.status(401).json({
-          message: 'Please log in!',
+          msg: 'Session expired please re-authenticate',
+        });
+      }
+
+      if (!decoded.type || decoded.type !== TokenTypeE.MAIN_TOKEN) {
+        return res.status(409).json({
+          msg: 'Invalid token',
         });
       }
 
@@ -52,12 +60,65 @@ export default {
           if (user) {
             req.userId = decoded.id;
             req.user = user;
+            next();
           } else {
-            res.status(401).json({
-              message: 'Please log in!',
+            return res.status(401).json({
+              msg: 'This account has not been found',
             });
           }
-          next();
+        });
+    });
+  },
+
+  verifyPasswordToken: async (req: Request, res: Response, next: NextFunction) => {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(403).json({
+        message: 'No tokens provided!',
+      });
+    }
+
+    const blacklistToken = await BlacklistToken.findOne({
+      where: {
+        token,
+        type: TokenTypeE.PASSWORD_TOKEN,
+      },
+    });
+
+    if (blacklistToken) {
+      return res.status(409).json({
+        msg: 'Session expired please re-authenticate with your password',
+      });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err: null, decoded: TokenDecodedI) => {
+      if (err) {
+        return res.status(401).json({
+          msg: 'Session expired please re-authenticate with your password',
+        });
+      }
+
+      if (!decoded.type || decoded.type !== TokenTypeE.PASSWORD_TOKEN) {
+        return res.status(409).json({
+          msg: 'Invalid token',
+        });
+      }
+
+      User
+        .findByPk(decoded.id)
+        .then((user) => {
+          if (user) {
+            req.passwordAuthData = {
+              userId: decoded.id,
+              user,
+            };
+            next();
+          } else {
+            return res.status(401).json({
+              msg: 'This account has not been found',
+            });
+          }
         });
     });
   },
@@ -68,6 +129,6 @@ export default {
     if (passed) {
       return next();
     }
-    return res.status(403).json({ message: "You don't have the necessary access" });
+    return res.status(403).json({ msg: "You don't have the necessary access" });
   },
 };
