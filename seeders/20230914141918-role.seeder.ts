@@ -1,7 +1,7 @@
 /* eslint-disable import/no-import-module-exports */
 import { QueryInterface } from 'sequelize';
 import sequelize from '../sequelize-instance';
-import Role from '../models/Role';
+import Role, { RoleE } from '../models/Role';
 import Permission from '../models/Permission';
 
 interface IRole {
@@ -11,12 +11,10 @@ interface IRole {
 
 const ROLES: IRole[] = [
   {
-    name: 'admin',
+    name: RoleE.ADMIN,
     permissions: [
       Permission.ROLE.ALL,
       Permission.USER.ALL,
-      Permission.USER.LOCK,
-      Permission.USER.UNLOCK,
       Permission.RESSOURCE.ALL,
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ,
@@ -25,7 +23,7 @@ const ROLES: IRole[] = [
     ],
   },
   {
-    name: 'TELLER',
+    name: RoleE.TELLER,
     permissions: [
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
@@ -33,7 +31,7 @@ const ROLES: IRole[] = [
     ],
   },
   {
-    name: 'DOMOPS',
+    name: RoleE.DOMOPS,
     permissions: [
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
@@ -42,7 +40,7 @@ const ROLES: IRole[] = [
     ],
   },
   {
-    name: 'CSO',
+    name: RoleE.CSO,
     permissions: [
       Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
       Permission.TRANSACTION.VALIDATE,

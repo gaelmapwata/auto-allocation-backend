@@ -57,15 +57,18 @@ export default {
       User
         .findByPk(decoded.id, { include: [{ model: Role, include: [Permission] }] })
         .then((user) => {
-          if (user) {
-            req.userId = decoded.id;
-            req.user = user;
-            next();
-          } else {
+          if (!user) {
             return res.status(401).json({
               msg: 'This account has not been found',
             });
           }
+
+          if (user.locked) {
+            return res.status(401).send({ msg: 'This account has been blocked, please contact the administrator' });
+          }
+          req.userId = decoded.id;
+          req.user = user;
+          next();
         });
     });
   },

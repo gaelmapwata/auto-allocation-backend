@@ -76,6 +76,12 @@ router.put(
   UserController.unlock as any,
 );
 
+router.put(
+  '/users/:id/validate',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.USER.VALIDATE)],
+  UserController.validate as any,
+);
+
 // ----------
 
 /**

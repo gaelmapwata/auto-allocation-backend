@@ -1,5 +1,7 @@
 import {
   Table, Column, Model, BelongsToMany, HasMany,
+  BelongsTo,
+  ForeignKey,
 } from 'sequelize-typescript';
 import Role from './Role';
 import Transaction from './Transaction';
@@ -39,6 +41,22 @@ export default class User extends Model {
 
   @Column
     locked!: boolean;
+
+  @ForeignKey(() => User)
+  @Column
+    validatedByUserId!: number;
+
+  @ForeignKey(() => User)
+  @Column
+    validationAskedByUserId!: number;
+
+  @ForeignKey(() => User)
+  @Column
+    createdByUserId!: number;
+
+  @ForeignKey(() => User)
+  @Column
+    deletedByUserId!: number;
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];

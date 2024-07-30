@@ -18,6 +18,7 @@ export default class Permission extends Model {
     UPDATE: 'USER:UPDATE',
     LOCK: 'USER:LOCK',
     UNLOCK: 'USER:UNLOCK',
+    VALIDATE: 'USER:VALIDATE',
     ALL: 'USER:ALL',
   };
 

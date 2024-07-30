@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import User from '../models/User';
 import userValidators from '../validators/userValidators';
-import Role from '../models/Role';
+import Role, { RoleE } from '../models/Role';
 import LogHelper, { userLogIdentifier } from '../utils/logHelper';
 import { Request } from '../types/ExpressOverride';
 
@@ -47,7 +47,14 @@ export default {
         if (!errors.isEmpty()) {
           return res.status(400).json({ msg: errors.array() });
         }
-        const user = await User.create(req.body);
+        const user = await User.create(
+          {
+            ...req.body,
+            createdByUserId: req.userId,
+            validationAskedByUserId: req.userId, // for admin
+          },
+          { fields: User.fillable.concat('createdByUserId', 'validationAskedByUserId') },
+        );
 
         const { roleId } = (req.body as any);
         if (roleId) {
@@ -89,26 +96,34 @@ export default {
         await User.update(
           req.body,
           {
-            where: {
-              id,
-            },
+            where: { id },
             fields: User.fillable,
           },
         );
 
-        const newUser = await User.findByPk(id, { include: [Role] });
+        const newUser = await User.findByPk(id, { include: [Role] }) as User;
 
         const { roleId } = (req.body as any);
-        if (roleId && newUser) {
-          if (!newUser.roles.length || newUser.roles[0].id !== roleId) {
-            const newRole = await Role.findByPk(roleId);
-            const previousRole = newUser.roles.length
-              ? newUser.roles[0].name
-              : 'No role';
+        const newRole = await Role.findByPk(roleId);
+        const roleHasChanged = !newUser.roles.length || newUser.roles[0].id !== roleId;
 
-            LogHelper.info(`User | user (${newUser?.email}) role changed`
-              + ` from ${previousRole} to ${newRole?.name} by user (${userLogIdentifier(req)})`);
+        if (roleId && roleHasChanged) {
+          if (newRole?.name === RoleE.ADMIN) {
+            await User.update(
+              {
+                validationAskedByUserId: req.userId,
+                validatedByUserId: null,
+              },
+              { where: { id } },
+            );
           }
+
+          const previousRole = newUser.roles.length
+            ? newUser.roles[0].name
+            : 'No role';
+
+          LogHelper.info(`User | user (${newUser?.email}) role changed`
+              + ` from ${previousRole} to ${newRole?.name} by user (${userLogIdentifier(req)})`);
 
           await newUser.$set('roles', roleId as number);
         }
@@ -125,7 +140,14 @@ export default {
     try {
       const { id } = req.params;
       const user = await User.findByPk(id);
-      user?.destroy();
+
+      if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+      }
+
+      user.deletedByUserId = req.userId as number;
+      user.save();
+      user.destroy();
 
       LogHelper.info(`User | user (${user?.email}) deleted by user (${userLogIdentifier(req)})`);
 
@@ -141,14 +163,13 @@ export default {
       await User.update({
         locked: true,
       }, {
-        where: {
-          id,
-        },
+        where: { id },
       });
 
-      LogHelper.info(`User | user (${id}) locked by user (${userLogIdentifier(req)})`);
+      const user = await User.findByPk(id);
+      LogHelper.info(`User | user (${user?.email}) locked by user (${userLogIdentifier(req)})`);
 
-      res.status(204).json({});
+      res.status(204).json(user);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -159,14 +180,40 @@ export default {
       await User.update({
         locked: false,
       }, {
-        where: {
-          id,
-        },
+        where: { id },
       });
 
-      LogHelper.info(`User | user (${id}) unlocked by user (${userLogIdentifier(req)})`);
+      const user = await User.findByPk(id);
+      LogHelper.info(`User | user (${user?.email}) unlocked by user (${userLogIdentifier(req)})`);
 
-      res.status(204).json({});
+      res.status(204).json(user);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  validate: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      const user = await User.findByPk(id);
+      if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+      }
+
+      if (user.validationAskedByUserId === req.userId) {
+        return res.status(400).json({ msg: 'You cannot validate accounts initiate by your self' });
+      }
+
+      await User.update({
+        validatedByUserId: req.userId,
+      }, {
+        where: { id },
+      });
+
+      LogHelper.info(`User | user (${user?.email}) validated by user (${userLogIdentifier(req)})`);
+
+      res.status(204).json(user);
     } catch (error) {
       res.status(500).json(error);
     }

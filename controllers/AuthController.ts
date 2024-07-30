@@ -17,11 +17,12 @@ import { UBA_MAIL_CONFIGS } from '../config/config';
 import OtpService from '../services/OtpService';
 import { TokenTypeE } from '../types/Token';
 import CryptoUtil from '../utils/CryptoUtil';
+import UserService from '../services/UserService';
 
 const jwt = require('jsonwebtoken');
 
 const JWT_TIME_VALIDITY = 300000; // 5min
-const JWT_PASSWORD_TOKEN_TIME_VALIDITY = 5 * 60; // 5min
+const JWT_PASSWORD_TOKEN_TIME_VALIDITY = 5 * 60;
 const MAX_LOGIN_ATTEMPT = 3;
 
 async function onLoginFailed(user:User) {
@@ -57,6 +58,11 @@ export default {
 
       if (user.locked) {
         return res.status(401).send({ msg: 'This account has been blocked, please contact the administrator' });
+      }
+
+      const userIsAdmin = await UserService.userIsAdmin(user.id);
+      if (userIsAdmin && !user.validatedByUserId) {
+        return res.status(401).send({ msg: 'This account has not been yet validated, please contact the administrator' });
       }
 
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);

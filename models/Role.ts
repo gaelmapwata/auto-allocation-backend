@@ -26,3 +26,10 @@ export default class Role extends Model {
 
   ressources!: Ressource[];
 }
+
+export enum RoleE {
+  ADMIN = 'admin',
+  TELLER = 'TELLER',
+  DOMOPS = 'DOMOPS',
+  CSO = 'CSO',
+}
