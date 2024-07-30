@@ -16,6 +16,7 @@ import LogHelper from '../utils/logHelper';
 import { UBA_MAIL_CONFIGS } from '../config/config';
 import OtpService from '../services/OtpService';
 import { TokenTypeE } from '../types/Token';
+import CryptoUtil from '../utils/CryptoUtil';
 
 const jwt = require('jsonwebtoken');
 
@@ -60,8 +61,9 @@ export default {
 
       LogHelper.info(`Auth | user ${req.body.email} trying to login`);
 
-      // const canLogged = await activeDirectoryService.login(req.body.email, req.body.password);
-      const canLogged = true;
+      const clearPassword = CryptoUtil.decrypt(req.body.password);
+      const canLogged = await activeDirectoryService.login(req.body.email, clearPassword);
+      // const canLogged = true;
 
       if (!canLogged) {
         await onLoginFailed(user);
@@ -91,7 +93,7 @@ export default {
         UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, userOTP),
       );
 
-      console.log(userOTP);
+      // console.log(userOTP);
 
       LogHelper.info(`Auth | user ${req.body.email} successful logged with active directory, otp sended`);
 

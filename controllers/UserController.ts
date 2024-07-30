@@ -52,9 +52,14 @@ export default {
         const { roleId } = (req.body as any);
         if (roleId) {
           await user.$add('roles', roleId as number);
+          await user.reload({ include: [Role] });
         }
 
-        LogHelper.info(`User | new user (${req.body.email}) created by user (${userLogIdentifier(req)})`);
+        const userRole = user.roles && user.roles.length
+          ? user.roles[0].name
+          : 'No role';
+
+        LogHelper.info(`User | new user (${req.body.email}) "${userRole}" created by user (${userLogIdentifier(req)})`);
 
         res.status(201).json(user);
       } catch (error) {
