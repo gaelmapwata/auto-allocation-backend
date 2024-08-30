@@ -22,7 +22,7 @@ import UserService from '../services/UserService';
 
 const jwt = require('jsonwebtoken');
 
-const JWT_TIME_VALIDITY = 300000; // 5min
+const JWT_TIME_VALIDITY = 60 * 5; // 5min
 const JWT_PASSWORD_TOKEN_TIME_VALIDITY = 5 * 60;
 const MAX_LOGIN_ATTEMPT = 3;
 
