@@ -10,11 +10,12 @@ import Role from '../models/Role';
 import BlacklistToken from '../models/BlacklistToken';
 import Permission from '../models/Permission';
 // import { sendMailFromEmailTemplates } from '../utils/mail';
-import utilHelper from '../utils/utilHelper';
+// import utilHelper from '../utils/utilHelper';
 import errorHandlerService from '../services/ErrorHandlerService';
 import LogHelper from '../utils/logHelper';
-import { UBA_MAIL_CONFIGS } from '../config/config';
-import OtpService from '../services/OtpService';
+// import { UBA_MAIL_CONFIGS } from '../config/config';
+// import OtpService from '../services/OtpService';
+import EntrustService from '../services/entrustService';
 import { TokenTypeE } from '../types/Token';
 import CryptoUtil from '../utils/CryptoUtil';
 import UserService from '../services/UserService';
@@ -89,15 +90,15 @@ export default {
       });
 
       // create new OTP
-      const { otp: userOTP } = await OtpService.createOtpForUser(req.body.email);
+      // const { otp: userOTP } = await OtpService.createOtpForUser(req.body.email);
 
-      utilHelper.sendEmailNotification(
-        req.body.email,
-        req.body.email,
-        UBA_MAIL_CONFIGS.EMAIL_SENDER.trim(),
-        UBA_MAIL_CONFIGS.OTP_EMAIL_SUBJECT,
-        UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, userOTP),
-      );
+      // utilHelper.sendEmailNotification(
+      //   req.body.email,
+      //   req.body.email,
+      //   UBA_MAIL_CONFIGS.EMAIL_SENDER.trim(),
+      //   UBA_MAIL_CONFIGS.OTP_EMAIL_SUBJECT,
+      //   UBA_MAIL_CONFIGS.OTP_EMAIL_MESSAGE.replace(/:otp/gi, userOTP),
+      // );
 
       // console.log(userOTP);
 
@@ -121,7 +122,8 @@ export default {
   checkOtp: async (req: Request, res: Response) => {
     try {
       const user = req.passwordAuthData?.user as User;
-      const otp = await OtpService.checkOtpFromUser(user.email, req.body.otp);
+      // const otp = await OtpService.checkOtpFromUser(user.email, req.body.otp);
+      const otp = await EntrustService.sendEntrustToken(user.email, req.body.otp);
 
       if (!otp) {
         return res.status(401).send({ msg: 'Otp not recognized or expired' });
@@ -134,7 +136,7 @@ export default {
         expiresIn: JWT_TIME_VALIDITY,
       });
 
-      otp.destroy();
+      // otp.destroy();
 
       LogHelper.info(`Auth | user ${user.email} successful logged with otp verification`);
 
