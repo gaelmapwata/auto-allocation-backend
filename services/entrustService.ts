@@ -29,7 +29,7 @@ export default {
       .text(`${clearOtp}`)
       .up()
       .ele('userGroup')
-      .text('STAFF_ENQUIRER_GROUP')
+      .text('')
       .up()
       .ele('username')
       .text(`${updatedEmail}`)
@@ -46,7 +46,7 @@ export default {
 
     const headers = {
       'Content-Type': 'text/xml;charset=UTF-8',
-      Authorization: `Basic ${Buffer.from('AUTOALLO:3BE03A8141DADB9A9EA5E6CE0DDF327F').toString('base64')}`,
+      Authorization: `Basic ${Buffer.from('AUTOALLO:MA7uhdgaQA').toString('base64')}`,
     };
 
     try {
