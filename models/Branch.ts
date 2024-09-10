@@ -11,7 +11,7 @@ import Bank from './Bank';
 })
 
 export default class Branch extends Model {
-  static fillable: string[] = ['bankId', 'solId', 'label'];
+  static fillable: string[] = ['solId', 'label'];
 
   @Column
     label!: string;

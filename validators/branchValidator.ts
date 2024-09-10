@@ -2,6 +2,10 @@ import Branch from '../models/Branch';
 
 const branchValidator = {
   storeSchema: {
+    label: {
+      notEmpty: true,
+      errorMessage: 'The "label" field is mandatory',
+    },
     solId: {
       custom: {
         options: async (value: string) => {
@@ -20,6 +24,11 @@ const branchValidator = {
   },
 
   updateSchema: {
+    label: {
+      notEmpty: {
+        errorMessage: 'The "label" field is mandatory',
+      },
+    },
     solId: {
       custom: {
         options: async (value: string, { req }: { req: any }) => {

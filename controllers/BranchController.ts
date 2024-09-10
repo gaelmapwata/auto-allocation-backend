@@ -61,7 +61,11 @@ export default {
         if (!errors.isEmpty()) {
           return res.status(400).json({ msg: errors.array() });
         }
-        const branch = await Branch.create(req.body);
+
+        const branch = await Branch.create({
+          ...req.body,
+          bankId: req.user?.branch?.bankId,
+        });
         res.status(201).json(branch);
       } catch (error) {
         res.status(500).json(error);
