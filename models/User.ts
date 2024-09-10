@@ -5,6 +5,7 @@ import {
 } from 'sequelize-typescript';
 import Role from './Role';
 import Transaction from './Transaction';
+import Branch from './Branch';
 import UserRole from './UserRole';
 
 @Table({
@@ -19,6 +20,7 @@ export default class User extends Model {
     'accountNumberUSD',
     'validateMaxAmountUSD',
     'validateMaxAmountCDF',
+    'branchId',
   ];
 
   @Column
@@ -57,6 +59,13 @@ export default class User extends Model {
   @ForeignKey(() => User)
   @Column
     deletedByUserId!: number;
+
+  @ForeignKey(() => Branch)
+  @Column
+    branchId!: number;
+
+  @BelongsTo(() => Branch)
+    branch!: Branch;
 
   @BelongsToMany(() => Role, () => UserRole)
     roles!: Role[];

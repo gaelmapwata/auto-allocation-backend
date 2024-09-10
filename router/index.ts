@@ -11,6 +11,9 @@ import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
 import AirtelMoneyController from '../controllers/AirtelMoneyController';
 import TransactionController from '../controllers/TransactionController';
+import CountryController from '../controllers/CountryController';
+import BankController from '../controllers/BankController';
+import BranchController from '../controllers/BranchController';
 import Permission from '../models/Permission';
 
 const router = express.Router();
@@ -124,6 +127,113 @@ router.delete(
   RoleController.delete,
 );
 
+// ----------
+
+/**
+ * countries routes
+ */
+
+router.get(
+  '/countries',
+  [authJwt.verifyToken],
+  CountryController.index as any,
+);
+
+router.post(
+  '/countries',
+  [authJwt.verifyToken],
+  CountryController.store as any,
+);
+
+router.get(
+  '/countries/:id',
+  [authJwt.verifyToken],
+  CountryController.show,
+);
+
+router.put(
+  '/countries/:id',
+  [authJwt.verifyToken],
+  CountryController.update as any,
+);
+
+router.delete(
+  '/countries/:id',
+  [authJwt.verifyToken],
+  CountryController.delete,
+);
+
+// ----------
+
+/**
+ * banks routes
+ */
+
+router.get(
+  '/banks',
+  [authJwt.verifyToken],
+  BankController.index as any,
+);
+
+router.post(
+  '/banks',
+  [authJwt.verifyToken],
+  BankController.store as any,
+);
+
+router.get(
+  '/banks/:id',
+  [authJwt.verifyToken],
+  BankController.show,
+);
+
+router.put(
+  '/banks/:id',
+  [authJwt.verifyToken],
+  BankController.update as any,
+);
+
+router.delete(
+  '/banks/:id',
+  [authJwt.verifyToken],
+  BankController.delete,
+);
+
+// ----------
+
+/**
+ * branches routes
+ */
+
+router.get(
+  '/branches',
+  [authJwt.verifyToken],
+  BranchController.index as any,
+);
+
+router.post(
+  '/branches',
+  [authJwt.verifyToken],
+  BranchController.store as any,
+);
+
+router.get(
+  '/branches/:id',
+  [authJwt.verifyToken],
+  BranchController.show,
+);
+
+router.put(
+  '/branches/:id',
+  [authJwt.verifyToken],
+  BranchController.update as any,
+);
+
+router.delete(
+  '/branches/:id',
+  [authJwt.verifyToken],
+  BranchController.delete,
+);
 // ----------
 
 /**
