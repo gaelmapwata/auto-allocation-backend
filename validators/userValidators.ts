@@ -25,6 +25,12 @@ const userValidators = {
       isInt: true,
       optional: true,
     },
+    branchId: {
+      isInt: true,
+      notEmpty: {
+        errorMessage: 'The "Branch" field is mandatory',
+      }
+    },
   },
 
   updateSchema: {
@@ -52,6 +58,10 @@ const userValidators = {
       },
     },
     roleId: {
+      isInt: true,
+      optional: true,
+    },
+    branchId: {
       isInt: true,
       optional: true,
     },

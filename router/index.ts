@@ -11,8 +11,6 @@ import RessourceController from '../controllers/RessourceController';
 import RoleController from '../controllers/RoleController';
 import AirtelMoneyController from '../controllers/AirtelMoneyController';
 import TransactionController from '../controllers/TransactionController';
-import CountryController from '../controllers/CountryController';
-import BankController from '../controllers/BankController';
 import BranchController from '../controllers/BranchController';
 import Permission from '../models/Permission';
 
