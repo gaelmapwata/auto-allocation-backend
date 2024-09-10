@@ -20,6 +20,7 @@ const ROLES: IRole[] = [
       Permission.TRANSACTION.READ,
       Permission.TRANSACTION.EXPORT,
       Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
+      Permission.BRANCH.ALL,
     ],
   },
   {

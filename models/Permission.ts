@@ -51,6 +51,14 @@ export default class Permission extends Model {
     CREATE_WITH_MANUAL_ACCOUNT: 'TRANSACTION:CREATE_WITH_MANUAL_ACCOUNT',
   };
 
+  static BRANCH = {
+    READ: 'BRANCH:READ',
+    CREATE: 'BRANCH:CREATE',
+    UPDATE: 'BRANCH:UPDATE',
+    DELETE: 'BRANCH:DELETE',
+    ALL: 'BRANCH:ALL',
+  };
+
   @ForeignKey(() => Ressource)
   @Column
     ressourceId!: number;

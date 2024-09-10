@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import Branch from '../models/Branch';
 import branchValidator from '../validators/branchValidator';
+import { Request } from '../types/ExpressOverride';
 
 export default {
-  index: async (req: Request, res: Response) => {
+  getByLoggedBank: async (req: Request, res: Response) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
       const limit = parseInt(req.query.limit as string, 10) || 10;
@@ -16,6 +17,9 @@ export default {
         ...limitQuery,
         offset,
         order: ['label'],
+        where: {
+          bankId: req.user?.branch?.bankId,
+        },
       });
 
       const branchesSize = branchesAndCount.count;
@@ -28,6 +32,22 @@ export default {
         limit,
         total: branchesSize,
       });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
+
+  getAllByLoggedBank: async (req: Request, res: Response) => {
+    try {
+      const branches = await Branch.findAll({
+        order: ['label'],
+        where: {
+          bankId: req.user?.branch?.bankId,
+        },
+        attributes: ['id', 'label'],
+      });
+
+      return res.status(200).json(branches);
     } catch (error) {
       res.status(500).json(error);
     }

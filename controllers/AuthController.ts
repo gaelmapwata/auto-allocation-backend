@@ -19,6 +19,8 @@ import EntrustService from '../services/entrustService';
 import { TokenTypeE } from '../types/Token';
 import CryptoUtil from '../utils/CryptoUtil';
 import UserService from '../services/UserService';
+import Branch from '../models/Branch';
+import Bank from '../models/Bank';
 
 const jwt = require('jsonwebtoken');
 
@@ -48,6 +50,7 @@ export default {
   signin: async (req: Request, res: Response) => {
     try {
       const user = await User.findOne({
+        include: [{ model: Branch, include: [Bank] }],
         where: {
           email: req.body.email,
         },
@@ -59,6 +62,14 @@ export default {
 
       if (user.locked) {
         return res.status(401).send({ msg: 'This account has been blocked, please contact the administrator' });
+      }
+
+      if (!user.branch) {
+        return res.status(401).send({ msg: 'This account is not linked to a branch, please contact the administrator' });
+      }
+
+      if (!user.branch.bank) {
+        return res.status(401).send({ msg: 'Cannot retrieve bank that is linked to the branch of this account, please contact the administrator' });
       }
 
       const userIsAdmin = await UserService.userIsAdmin(user.id);

@@ -60,6 +60,16 @@ const RESSOURCES: IRessource[] = [
       { name: 'read-transaction-to-validate', slug: Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE },
     ],
   },
+  {
+    name: 'branch',
+    permissions: [
+      { name: 'create', slug: Permission.BRANCH.CREATE },
+      { name: 'update', slug: Permission.BRANCH.UPDATE },
+      { name: 'read', slug: Permission.BRANCH.READ },
+      { name: 'delete', slug: Permission.BRANCH.DELETE },
+      { name: 'all', slug: Permission.BRANCH.ALL },
+    ],
+  },
 ];
 
 module.exports = {

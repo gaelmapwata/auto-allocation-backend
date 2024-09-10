@@ -130,108 +130,36 @@ router.delete(
 // ----------
 
 /**
- * countries routes
- */
-
-router.get(
-  '/countries',
-  [authJwt.verifyToken],
-  CountryController.index as any,
-);
-
-router.post(
-  '/countries',
-  [authJwt.verifyToken],
-  CountryController.store as any,
-);
-
-router.get(
-  '/countries/:id',
-  [authJwt.verifyToken],
-  CountryController.show,
-);
-
-router.put(
-  '/countries/:id',
-  [authJwt.verifyToken],
-  CountryController.update as any,
-);
-
-router.delete(
-  '/countries/:id',
-  [authJwt.verifyToken],
-  CountryController.delete,
-);
-
-// ----------
-
-/**
- * banks routes
- */
-
-router.get(
-  '/banks',
-  [authJwt.verifyToken],
-  BankController.index as any,
-);
-
-router.post(
-  '/banks',
-  [authJwt.verifyToken],
-  BankController.store as any,
-);
-
-router.get(
-  '/banks/:id',
-  [authJwt.verifyToken],
-  BankController.show,
-);
-
-router.put(
-  '/banks/:id',
-  [authJwt.verifyToken],
-  BankController.update as any,
-);
-
-router.delete(
-  '/banks/:id',
-  [authJwt.verifyToken],
-  BankController.delete,
-);
-
-// ----------
-
-/**
  * branches routes
  */
 
 router.get(
-  '/branches',
-  [authJwt.verifyToken],
-  BranchController.index as any,
+  '/branches/by-logged-bank',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.BRANCH.READ)],
+  BranchController.getByLoggedBank as any,
+);
+
+router.get(
+  '/branches/all-by-logged-bank',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.BRANCH.READ)],
+  BranchController.getAllByLoggedBank as any,
 );
 
 router.post(
   '/branches',
-  [authJwt.verifyToken],
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.BRANCH.CREATE)],
   BranchController.store as any,
-);
-
-router.get(
-  '/branches/:id',
-  [authJwt.verifyToken],
-  BranchController.show,
 );
 
 router.put(
   '/branches/:id',
-  [authJwt.verifyToken],
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.BRANCH.UPDATE)],
   BranchController.update as any,
 );
 
 router.delete(
   '/branches/:id',
-  [authJwt.verifyToken],
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.BRANCH.DELETE)],
   BranchController.delete,
 );
 // ----------

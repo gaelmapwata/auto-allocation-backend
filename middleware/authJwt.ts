@@ -6,6 +6,8 @@ import Role from '../models/Role';
 import Permission from '../models/Permission';
 import BlacklistToken from '../models/BlacklistToken';
 import { TokenDecodedI, TokenTypeE } from '../types/Token';
+import Bank from '../models/Bank';
+import Branch from '../models/Branch';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const jwt = require('jsonwebtoken');
@@ -55,7 +57,12 @@ export default {
       }
 
       User
-        .findByPk(decoded.id, { include: [{ model: Role, include: [Permission] }] })
+        .findByPk(decoded.id, {
+          include: [
+            { model: Role, include: [Permission] },
+            { model: Branch, include: [Bank] },
+          ],
+        })
         .then((user) => {
           if (!user) {
             return res.status(401).json({
@@ -66,6 +73,15 @@ export default {
           if (user.locked) {
             return res.status(401).send({ msg: 'This account has been blocked, please contact the administrator' });
           }
+
+          if (!user.branch) {
+            return res.status(401).send({ msg: 'This account is not linked to a branch, please contact the administrator' });
+          }
+
+          if (!user.branch.bank) {
+            return res.status(401).send({ msg: 'Cannot retrieve bank that is linked to the branch of this account, please contact the administrator' });
+          }
+
           req.userId = decoded.id;
           req.user = user;
           next();

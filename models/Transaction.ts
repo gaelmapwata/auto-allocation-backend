@@ -5,6 +5,7 @@ import {
 import User from './User';
 import TransactionAirtelMoney from './TransactionAirtelMoney';
 import FinacleTransaction from './FinacleTransaction';
+import Branch from './Branch';
 
 @Table({
   tableName: 'transactions',
@@ -76,6 +77,10 @@ export default class Transaction extends Model {
   @Column
     checkerId!: number;
 
+  @ForeignKey(() => Branch)
+  @Column
+    branchId!: number;
+
   @BelongsTo(() => User, 'checkerId')
     checker!: User;
 
@@ -84,4 +89,7 @@ export default class Transaction extends Model {
 
   @HasOne(() => FinacleTransaction)
     finacleTransaction!: FinacleTransaction;
+
+  @BelongsTo(() => Branch)
+    branch!: Branch;
 }

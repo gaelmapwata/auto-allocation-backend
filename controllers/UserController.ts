@@ -5,6 +5,8 @@ import userValidators from '../validators/userValidators';
 import Role, { RoleE } from '../models/Role';
 import LogHelper, { userLogIdentifier } from '../utils/logHelper';
 import { Request } from '../types/ExpressOverride';
+import Branch from '../models/Branch';
+import BranchService from '../services/BranchService';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -21,7 +23,7 @@ export default {
         ...limitQuery,
         offset,
         order: ['email'],
-        include: [Role],
+        include: [Role, Branch],
       });
 
       const usersSize = usersAndCount.count;
@@ -47,6 +49,14 @@ export default {
         if (!errors.isEmpty()) {
           return res.status(400).json({ msg: errors.array() });
         }
+
+        const userbelongsToBankOfBranch = await BranchService
+          .userBelongsToBankOfBranch(req.user as User, req.body.branchId);
+
+        if (!userbelongsToBankOfBranch) {
+          return res.status(400).json({ msg: 'You should belong to the same bank as the branch' });
+        }
+
         const user = await User.create(
           {
             ...req.body,
@@ -93,6 +103,16 @@ export default {
           return res.status(400).json({ msg: errors.array() });
         }
         const { id } = req.params;
+
+        if (req.body.branchId) {
+          const userbelongsToBankOfBranch = await BranchService
+            .userBelongsToBankOfBranch(req.user as User, req.body.branchId);
+
+          if (!userbelongsToBankOfBranch) {
+            return res.status(400).json({ msg: 'You should belong to the same bank as the branch' });
+          }
+        }
+
         await User.update(
           req.body,
           {
