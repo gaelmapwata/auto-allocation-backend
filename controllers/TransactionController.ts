@@ -23,7 +23,7 @@ import Permission from '../models/Permission';
 import { UBAUtilities } from '../utils/uba';
 import Branch from '../models/Branch';
 
-function updateTransactionById(id: number, data: {[key:string]: string | boolean}) {
+function updateTransactionById(id: number, data: {[key:string]: string | boolean | null}) {
   return Transaction.update(data, {
     where: {
       id,
@@ -319,7 +319,7 @@ export default {
         },
       );
 
-      updateTransactionById(transaction.id, { success: true });
+      updateTransactionById(transaction.id, { success: true, error: null, errorAirtelMoney: null });
       LogHelper.info(`Transaction | transaction (${transaction.id}) revalidated by user (${userLogIdentifier(req)}) successfully`);
 
       return res.status(200).json(transaction);
