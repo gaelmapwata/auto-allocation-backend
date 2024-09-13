@@ -228,6 +228,11 @@ router.put(
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.REVALIDATE)],
   TransactionController.revalidateTransaction,
 );
+router.put(
+  '/transactions/:id/authorized',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.AUTHORIZED)],
+  TransactionController.authorizedToValidateTransaction,
+);
 router.get(
   '/transactions/stats',
   [

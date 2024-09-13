@@ -28,6 +28,7 @@ export default class Transaction extends Model {
     'crAcctNum',
     'errorFinacle',
     'errorAirtelMoney',
+    'isAuthorized',
   ];
 
   @Column
@@ -65,6 +66,9 @@ export default class Transaction extends Model {
 
   @Column
     crAcctNum!: string;
+
+  @Column
+    isAuthorized!: boolean;
 
   @ForeignKey(() => User)
   @Column
