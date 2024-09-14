@@ -233,6 +233,11 @@ router.put(
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.AUTHORIZED)],
   TransactionController.authorizedToValidateTransaction,
 );
+router.put(
+  '/transactions/:id/canceled',
+  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.VALIDATE)],
+  TransactionController.cancelTransaction,
+);
 router.get(
   '/transactions/stats',
   [
