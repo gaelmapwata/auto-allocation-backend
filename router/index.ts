@@ -230,7 +230,10 @@ router.put(
 );
 router.put(
   '/transactions/:id/authorize-revalidation',
-  [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.AUTHORIZED)],
+  [
+    authJwt.verifyToken,
+    authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.AUTHORIZE_REVALIDATION),
+  ],
   TransactionController.authorizeToReValidateTransaction,
 );
 router.put(

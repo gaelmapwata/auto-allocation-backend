@@ -343,7 +343,7 @@ export default {
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
-    if (!transaction.errorAirtelMoneym || transaction.success) {
+    if (!transaction.errorAirtelMoney || transaction.success) {
       return res.status(503).json({ message: 'This transaction has already been passed successful' });
     }
     try {
