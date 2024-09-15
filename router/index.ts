@@ -229,12 +229,12 @@ router.put(
   TransactionController.revalidateTransaction,
 );
 router.put(
-  '/transactions/:id/authorized',
+  '/transactions/:id/authorize-revalidation',
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.AUTHORIZED)],
-  TransactionController.authorizedToValidateTransaction,
+  TransactionController.authorizeToReValidateTransaction,
 );
 router.put(
-  '/transactions/:id/canceled',
+  '/transactions/:id/cancel',
   [authJwt.verifyToken, authJwt.shouldHaveOneOfPermissions(Permission.TRANSACTION.VALIDATE)],
   TransactionController.cancelTransaction,
 );

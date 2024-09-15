@@ -234,6 +234,10 @@ export default {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
+    if (transaction.checkerId) {
+      return res.status(503).json({ message: 'This transaction has already been validated' });
+    }
+
     if (transaction.currency === 'USD' && transaction.amount > (req.user as User).validateMaxAmountUSD) {
       return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountUSD} USD` });
     }
@@ -293,8 +297,8 @@ export default {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
-    if (!transaction.errorAirtelMoney) {
-      return res.status(503).json({ message: 'This transaction has already been successful' });
+    if (!transaction.errorAirtelMoney || transaction.success) {
+      return res.status(503).json({ message: 'This transaction has already been passed successful' });
     }
 
     if (!transaction.isAuthorized) {
@@ -334,13 +338,13 @@ export default {
     }
   },
 
-  authorizedToValidateTransaction: async (req:Request, res: Response) => {
+  authorizeToReValidateTransaction: async (req:Request, res: Response) => {
     const transaction = await Transaction.findByPk(req.params.id);
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
-    if (!transaction.errorAirtelMoney) {
-      return res.status(503).json({ message: 'This transaction has already been successful' });
+    if (!transaction.errorAirtelMoneym || transaction.success) {
+      return res.status(503).json({ message: 'This transaction has already been passed successful' });
     }
     try {
       const data = await Transaction.update(
@@ -361,13 +365,17 @@ export default {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
-    if (!transaction.success) {
-      return res.status(503).json({ message: 'This transaction has already been successful' });
+    if (transaction.checkerId) {
+      return res.status(503).json({ message: 'This transaction has already been validated' });
     }
 
     try {
       const data = await Transaction.update(
-        { success: false, error: 'The transaction was canceled by your validator, please try again' },
+        {
+          success: false,
+          error: 'The transaction was canceled by your validator',
+          checkerId: (req as any).userId,
+        },
         { where: { id: transaction.id } },
       );
       return res.status(200).json(data);
