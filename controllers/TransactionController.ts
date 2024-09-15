@@ -313,6 +313,7 @@ export default {
       return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountCDF} CDF` });
     }
     try {
+      LogHelper.info(`Transaction | user (${userLogIdentifier(req)}) revalidate  a transaction, transactionId: ${transaction.id}`);
       // eslint-disable-next-line max-len
       const resultAirtelMoneyService = await airtelMoneyService.autoAllocation(transaction);
       await TransactionAirtelMoney.create(
@@ -347,6 +348,7 @@ export default {
       return res.status(503).json({ message: 'This transaction has already been passed successful' });
     }
     try {
+      LogHelper.info(`Transaction | user (${userLogIdentifier(req)}) authorized to revalidate  a transaction, transactionId: ${transaction.id}`);
       const data = await Transaction.update(
         { isAuthorized: true },
         { where: { id: transaction.id } },
@@ -370,6 +372,7 @@ export default {
     }
 
     try {
+      LogHelper.info(`Transaction | user (${userLogIdentifier(req)}) canceled  a transaction, transactionId: ${transaction.id}`);
       const data = await Transaction.update(
         {
           success: false,
