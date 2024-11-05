@@ -116,6 +116,10 @@ const AirtelMoneyService = {
     })
       .catch((err) => {
         reject(err);
+        LogHelper.info(`Airtel Money | error occurred when sending transaction to airtel api, error: ${err}`);
+
+        AirtelMoneyService
+          .setAirtelMoneyErrorOnTransaction(transaction, err.message);
       });
   }),
 
