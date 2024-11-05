@@ -1,7 +1,9 @@
 import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import XLSX from 'xlsx';
-import { Op, Sequelize, WhereOptions } from 'sequelize';
+import {
+  literal, Op, Sequelize, WhereOptions,
+} from 'sequelize';
 import transactionValidators from '../validators/transactionValidators';
 import Transaction from '../models/Transaction';
 import FinacleTransaction from '../models/FinacleTransaction';
@@ -100,7 +102,18 @@ export default {
         where: whereFilter,
         ...limitQuery,
         offset,
-        order: [['createdAt', 'DESC']],
+        order: [
+          [
+            literal(`
+              CASE 
+                WHEN error IS NOT NULL THEN 1 
+                ELSE 0 
+              END
+            `),
+            'DESC',
+          ],
+          ['createdAt', 'DESC'],
+        ],
       });
       const TransactionsSize = TransactionCount.count;
       const totalPages = Math.ceil(TransactionsSize / limit);
@@ -182,6 +195,9 @@ export default {
             ],
           ],
         },
+        order: [
+          ['createdAt', 'DESC'],
+        ],
       });
 
       const workbook = XLSX.utils.book_new();
