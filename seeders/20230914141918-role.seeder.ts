@@ -33,6 +33,16 @@ const ROLES: IRole[] = [
     ],
   },
   {
+    name: RoleE.ETSHOPIE,
+    permissions: [
+      Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
+      Permission.TRANSACTION.VALIDATE,
+      Permission.TRANSACTION.READ,
+      Permission.TRANSACTION.REVALIDATE,
+      Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE_AT_BANK_LEVEL,
+    ],
+  },
+  {
     name: RoleE.DOMOPS,
     permissions: [
       Permission.AIRTEL.CHECK_KYC,

@@ -58,6 +58,7 @@ const RESSOURCES: IRessource[] = [
       { name: 'export', slug: Permission.TRANSACTION.EXPORT },
       { name: 'validate', slug: Permission.TRANSACTION.VALIDATE },
       { name: 'read-transaction-to-validate', slug: Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE },
+      { name: 'read-transaction-to-validate-at-bank-level', slug: Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE_AT_BANK_LEVEL },
       { name: 'revalidate', slug: Permission.TRANSACTION.REVALIDATE },
       { name: 'authorise-revalidation', slug: Permission.TRANSACTION.AUTHORIZE_REVALIDATION },
     ],

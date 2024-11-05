@@ -34,7 +34,15 @@ function updateTransactionById(id: number, data: {[key:string]: string | boolean
 async function generateFilterAttributes(req: Request):Promise<any> {
   const filterAttributes: any = {};
 
-  filterAttributes['$Branch.bankId$'] = req.user?.branch.bankId;
+  const userCanSeeAllTransactionAtBankLevel = await UserService
+    // eslint-disable-next-line max-len
+    .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE_AT_BANK_LEVEL);
+
+  if (userCanSeeAllTransactionAtBankLevel) {
+    filterAttributes['$Branch.bankId$'] = req.user?.branch.bankId;
+  } else {
+    filterAttributes.branchId = req.user?.branchId;
+  }
 
   const userCanSeeAllTransactions = await UserService
     .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ);
