@@ -30,6 +30,8 @@ const ROLES: IRole[] = [
       Permission.AIRTEL.CHECK_KYC,
       Permission.TRANSACTION.READ_OWN_TRANSACTIONS,
       Permission.TRANSACTION.CREATE,
+      Permission.TRANSACTION.CREATE_WITH_OWN_ACCOOUNT,
+      Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT,
     ],
   },
   {
