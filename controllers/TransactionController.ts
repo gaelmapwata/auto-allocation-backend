@@ -1,7 +1,9 @@
 import { Response } from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 import XLSX from 'xlsx';
-import { Op, Sequelize, WhereOptions } from 'sequelize';
+import {
+  literal, Op, Sequelize, WhereOptions,
+} from 'sequelize';
 import transactionValidators from '../validators/transactionValidators';
 import Transaction from '../models/Transaction';
 import FinacleTransaction from '../models/FinacleTransaction';
@@ -34,7 +36,15 @@ function updateTransactionById(id: number, data: {[key:string]: string | boolean
 async function generateFilterAttributes(req: Request):Promise<any> {
   const filterAttributes: any = {};
 
-  filterAttributes['$Branch.bankId$'] = req.user?.branch.bankId;
+  const userCanSeeAllTransactionAtBankLevel = await UserService
+    // eslint-disable-next-line max-len
+    .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE_AT_BANK_LEVEL);
+
+  if (userCanSeeAllTransactionAtBankLevel) {
+    filterAttributes['$Branch.bankId$'] = req.user?.branch.bankId;
+  } else {
+    filterAttributes.branchId = req.user?.branchId;
+  }
 
   const userCanSeeAllTransactions = await UserService
     .userHasOneOfPermissions(req.user as User, Permission.TRANSACTION.READ);
@@ -92,7 +102,18 @@ export default {
         where: whereFilter,
         ...limitQuery,
         offset,
-        order: [['createdAt', 'DESC']],
+        order: [
+          [
+            literal(`
+              CASE 
+                WHEN error IS NOT NULL THEN 1 
+                ELSE 0 
+              END
+            `),
+            'DESC',
+          ],
+          ['createdAt', 'DESC'],
+        ],
       });
       const TransactionsSize = TransactionCount.count;
       const totalPages = Math.ceil(TransactionsSize / limit);
@@ -174,6 +195,9 @@ export default {
             ],
           ],
         },
+        order: [
+          ['createdAt', 'DESC'],
+        ],
       });
 
       const workbook = XLSX.utils.book_new();
