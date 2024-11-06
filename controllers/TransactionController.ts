@@ -305,11 +305,11 @@ export default {
       return res.status(503).json({ message: 'this transaction has not yet been authorized by admin' });
     }
 
-    if (transaction.currency === 'USD' && transaction.amount > (req.user as User).validateMaxAmountUSD) {
+    if (transaction.currency === 'USD' && Number(transaction.amount) > Number((req.user as User).validateMaxAmountUSD)) {
       return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountUSD} USD` });
     }
 
-    if (transaction.currency === 'CDF' && transaction.amount > (req.user as User).validateMaxAmountCDF) {
+    if (transaction.currency === 'CDF' && Number(transaction.amount) > Number((req.user as User).validateMaxAmountCDF)) {
       return res.status(503).send({ msg: `Transaction limit exceeded. You are only authorized to validate amounts below ${(req.user as User).validateMaxAmountCDF} CDF` });
     }
     try {
