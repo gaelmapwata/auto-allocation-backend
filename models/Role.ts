@@ -30,7 +30,7 @@ export default class Role extends Model {
 export enum RoleE {
   ADMIN = 'admin',
   TELLER = 'TELLER',
-  ETSHOPIE = 'ETSHOPIE',
+  OPS = 'OPS',
   DOMOPS = 'DOMOPS',
   CSO = 'CSO',
 }
