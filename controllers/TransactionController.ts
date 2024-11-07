@@ -171,29 +171,13 @@ export default {
 
       const transactions = await Transaction.findAll({
         where: whereFilter,
-        raw: true,
+        include: [
+          { model: Branch, attributes: ['id', 'label'] },
+          { model: User, as: 'user', attributes: ['id', 'email'] },
+          { model: User, as: 'checker', attributes: ['id', 'email'] },
+        ],
         attributes: {
           exclude: ['updatedAt', 'deletedAt'],
-          include: [
-            [
-              Sequelize.literal(`(
-                SELECT email FROM users WHERE users.id = Transaction.userId
-              )`),
-              'maker_email',
-            ],
-            [
-              Sequelize.literal(`(
-                SELECT email FROM users WHERE users.id = Transaction.checkerId
-              )`),
-              'checker_email',
-            ],
-            [
-              Sequelize.literal(`(
-                SELECT label FROM branches WHERE branches.id = Transaction.branchId
-              )`),
-              'branch',
-            ],
-          ],
         },
         order: [
           ['createdAt', 'DESC'],
@@ -201,7 +185,24 @@ export default {
       });
 
       const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(transactions);
+      const worksheet = XLSX.utils.json_to_sheet(transactions.map((transaction) => {
+        const transactionFormatted : typeof transaction & {
+          maker_email?: string;
+          checker_email?: string;
+          branch_name?: string;
+        } = transaction.dataValues;
+
+        transactionFormatted.maker_email = transaction.user?.email;
+        transactionFormatted.checker_email = transaction.checker?.email;
+        transactionFormatted.branch_name = transaction.branch?.label;
+
+        // remove relationshiip attributes;
+        delete transactionFormatted?.branch;
+        delete transactionFormatted?.user;
+        delete transactionFormatted?.checker;
+
+        return transactionFormatted;
+      }));
 
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
