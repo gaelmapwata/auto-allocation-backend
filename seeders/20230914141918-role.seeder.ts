@@ -35,7 +35,7 @@ const ROLES: IRole[] = [
     ],
   },
   {
-    name: RoleE.ETSHOPIE,
+    name: RoleE.OPS,
     permissions: [
       Permission.TRANSACTION.READ_TRANSACTIONS_TO_VALIDATE,
       Permission.TRANSACTION.VALIDATE,
