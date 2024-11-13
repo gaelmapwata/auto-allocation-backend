@@ -24,8 +24,16 @@ export const UBAUtilities = {
   ) : Promise<string> {
     const userHasPermissionToSetManualAccountToDebit = await UserService
       .userByIdHasPermission(payload.userId, Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT);
+
+    const userHasPermissionToUseOwnAccountToDebit = await UserService
+      .userByIdHasPermission(payload.userId, Permission.TRANSACTION.CREATE_WITH_OWN_ACCOOUNT);
+
     if (userHasPermissionToSetManualAccountToDebit) {
-      return payload.accountNumber;
+      if (userHasPermissionToUseOwnAccountToDebit && payload.accountNumber) {
+        return payload.accountNumber;
+      } if (!userHasPermissionToUseOwnAccountToDebit) {
+        return payload.accountNumber;
+      }
     }
 
     if (payload.currency === 'CDF' && !payload.accountNumberCDF) {
