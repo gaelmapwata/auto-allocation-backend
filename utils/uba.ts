@@ -30,6 +30,11 @@ export const UBAUtilities = {
 
     if (userHasPermissionToSetManualAccountToDebit) {
       if (userHasPermissionToUseOwnAccountToDebit && payload.accountNumber) {
+        // the account number is optional for user that can use their own account to debit
+        // if the account number is not provided the second condition will be false
+        // as their have the permission to use their own accoount to debit
+        // so we will use the account number of the user in the below code
+        // "payload.accountNumberCDF" || "payload.accountNumberUSD"
         return payload.accountNumber;
       } if (!userHasPermissionToUseOwnAccountToDebit) {
         return payload.accountNumber;
