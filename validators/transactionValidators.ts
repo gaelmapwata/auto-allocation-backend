@@ -41,7 +41,17 @@ const transactionValidators = {
               Permission.TRANSACTION.CREATE_WITH_MANUAL_ACCOUNT,
             );
 
-          if (userHasPermissionToSetManualAccountToDebit && !value) {
+          const userHasPermissionToUseOwnAccountToDebit = await UserService
+            .userByIdHasPermission(
+              (req as Request).userId as number,
+              Permission.TRANSACTION.CREATE_WITH_OWN_ACCOOUNT,
+            );
+
+          if (
+            userHasPermissionToSetManualAccountToDebit
+            && !userHasPermissionToUseOwnAccountToDebit
+            && !value
+          ) {
             throw new Error('The "accountNumber" field is mandatory');
           }
         },
